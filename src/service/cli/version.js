@@ -8,6 +8,4 @@ module.exports = {
     const version = packageJsonFile.version;
     console.info(version);
   }
-  };
-
-
+};

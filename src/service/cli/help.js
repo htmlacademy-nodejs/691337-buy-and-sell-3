@@ -2,14 +2,17 @@
 
 module.exports = {
   name: `--help`,
-  run () {
+  run() {
     const info = `
-    Программа формирует файл с моковыми данными
+    Программа запускает http-сервер и формирует файл с данными для API.
 
+    Гайд:
+    server <command>
+    
     Команды:
-    --version           Выводит номер версии
-    --help              Выводит справку
-    --generate <count>  Формирует файл mocks.json
+    --version:            выводит номер версии
+    --help:               печатает этот текст
+    --generate <count>    формирует файл mocks.json
     `;
 
     console.log(info);
