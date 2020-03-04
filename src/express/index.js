@@ -11,13 +11,6 @@ const loginRoutes = require(`./routes/login`);
 const PORT = 8080;
 const PUBLIC_DIR = `markup`;
 
-const app = express();
-
-app.set(`views`, `./src/express/templates`);
-app.set(`view engine`, `pug`);
-
-app.use(express.static(PUBLIC_DIR));
-
 const Routes = {
   'offers': offersRoutes,
   'my-tickets': myRoutes,
@@ -25,6 +18,13 @@ const Routes = {
   'register': registerRoutes,
   'login': loginRoutes,
 };
+
+const app = express();
+
+app.set(`views`, `./src/express/templates`);
+app.set(`view engine`, `pug`);
+
+app.use(express.static(PUBLIC_DIR));
 
 Object.entries(Routes).forEach(([key, value]) => app.use(`/${key}`, value));
 app.get(`/`, (req, res) => res.render(`main`));
