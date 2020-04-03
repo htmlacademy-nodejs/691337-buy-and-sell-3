@@ -1,13 +1,19 @@
 'use strict';
 
-const {getData} = require(`../../utils`);
+const {data, getData, routeMethod} = require(`../../storage`);
 
-const FILENAME = `mocks.json`;
+const checkData = async () => {
+
+  if (!routeMethod.isLoaded) {
+    await getData();
+    routeMethod.isLoaded = true;
+  }
+
+};
 
 module.exports.getSearch = async (req, res) => {
-  const data = await getData(FILENAME);
-  const searchString = req.query;
-  const matchedOffers = data.filter((it) => it.title.includes(searchString.query));
+  await checkData();
+  const matchedOffers = routeMethod.getMatchedOffers(data, req.query);
   return res.json(matchedOffers);
 };
 

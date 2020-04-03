@@ -1,7 +1,5 @@
 'use strict';
 
-const fs = require(`fs`).promises;
-
 module.exports.getRandomInt = (min, max) => {
   min = Math.ceil(min);
   max = Math.floor(max);
@@ -15,13 +13,4 @@ module.exports.shuffle = (someArray) => {
   }
 
   return someArray;
-};
-
-module.exports.getData = async (fileName) => {
-  try {
-    const content = await fs.readFile(fileName, `utf-8`);
-    return JSON.parse(content);
-  } catch (err) {
-    return [];
-  }
 };

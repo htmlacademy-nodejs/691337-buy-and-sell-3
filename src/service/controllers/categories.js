@@ -1,13 +1,18 @@
 'use strict';
 
-const {getData} = require(`../../utils`);
+const {data, getData, routeMethod} = require(`../../storage`);
 
-const FILENAME = `mocks.json`;
+const checkData = async () => {
 
-module.exports.getAll = async (req, res) => {
-  const data = await getData(FILENAME);
-  return res.json(data.map((it) => it.category)
-  .flat()
-  .reduce((acc, it) => !acc.includes(it) ? [...acc, it] : acc, []));
+  if (!routeMethod.isLoaded) {
+    await getData();
+    routeMethod.isLoaded = true;
+  }
+
 };
 
+module.exports.getAll = async (req, res) => {
+  await checkData();
+  const categories = routeMethod.getCategories(data);
+  return res.json(categories);
+};
