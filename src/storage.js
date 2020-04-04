@@ -1,46 +1,47 @@
 'use strict';
 
-const fs = require(`fs`).promises;
+const nanoid = require(`nanoid`);
+const mocks = require(`../mocks`);
 
-const FILENAME = `mocks.json`;
-const mocks = [];
+const NOT_FOUND_INDEX = -1;
+const ID_LENGTH = 6;
 
-module.exports.data = mocks;
-
-module.exports.getData = async () => {
-  try {
-    const content = await fs.readFile(FILENAME, `utf-8`);
-    const data = JSON.parse(content);
-    data.forEach((it) => mocks.push(it));
-  } catch (err) {
-    console.error(err);
-  }
-};
-
-module.exports.routeMethod = {
-  isLoaded: false,
-  getCategories: (data) => {
-    return data.map((it) => it.category)
+module.exports.storage = {
+  getCategories: () => {
+    return mocks.map((it) => it.category)
           .flat()
           .reduce((acc, it) => !acc.includes(it) ? [...acc, it] : acc, []);
   },
-  getAllOffers: (data) => {
-    return data.map((it) => it.title);
+  getAllOffers: () => {
+    return mocks.map((it) => it.title);
   },
-  getOfferIndex: (data, offerId) => {
-    return data.map((it) => it.id).indexOf(offerId);
+  getOfferById: (offerId) => {
+    const index = mocks.map((it) => it.id).indexOf(offerId);
+    return index !== NOT_FOUND_INDEX ? mocks[index] : undefined;
   },
-  getCommentIndex: (data, index, commentId) => {
-    return data[index].comments
+  getComments: (offerId) => {
+    const index = mocks.map((it) => it.id).indexOf(offerId);
+    return index !== NOT_FOUND_INDEX ? mocks[index].comments : undefined;
+  },
+  removeOffer: (offerId) => {
+    const index = mocks.map((it) => it.id).indexOf(offerId);
+    return index !== NOT_FOUND_INDEX ? mocks.splice(index, 1) : undefined;
+  },
+  removeComment: (offerId, commentId) => {
+    const index = mocks.map((it) => it.id).indexOf(offerId);
+    const commentIndex = mocks[index].comments
       .map((it) => it.id).indexOf(commentId);
+    return index !== NOT_FOUND_INDEX && commentIndex !== NOT_FOUND_INDEX ?
+      mocks[index].comments.splice(commentIndex, 1) : undefined;
   },
   isValid: (offer) => {
     const properties = [`category`, `description`, `picture`, `title`, `type`, `sum`];
     return properties.every((it) => offer.hasOwnProperty(it));
   },
-  createOfferObject: (offer) => {
-    const {title, picture, description, type, category, sum} = offer;
-    return {
+  updateOffer: (offerId, newData) => {
+    const index = mocks.map((it) => it.id).indexOf(offerId);
+    const {title, picture, description, type, category, sum} = newData;
+    const updatedOffer = {
       title,
       picture,
       description,
@@ -48,18 +49,26 @@ module.exports.routeMethod = {
       category,
       sum,
     };
+    mocks[index] = {...mocks[index], ...updatedOffer};
+    return index !== NOT_FOUND_INDEX ? mocks[index] : undefined;
   },
-  createNewCommentObject: (commentId, comment) => {
+  addOfferComment: (offerId, comment) => {
+    const index = mocks.map((it) => it.id).indexOf(offerId);
     const {text} = comment;
-    return {
-      id: commentId,
+    const newComment = {
+      id: nanoid(ID_LENGTH),
       text,
     };
+    return index !== NOT_FOUND_INDEX ?
+      mocks[index].comments.unshift(newComment) : undefined;
   },
-  createNewOfferObject: (offerId, offer) => {
-    const {title, picture, description, type, category, sum} = offer;
-    return {
-      id: offerId,
+  isCommentValid: (comment) => {
+    return comment && comment.text !== `` ? true : false;
+  },
+  addNewOffer: (newData) => {
+    const {title, picture, description, type, category, sum} = newData;
+    const newOffer = {
+      id: nanoid(ID_LENGTH),
       title,
       picture,
       description,
@@ -68,8 +77,9 @@ module.exports.routeMethod = {
       sum,
       comments: [],
     };
+    return mocks.unshift(newOffer);
   },
-  getMatchedOffers: (data, searchString) => {
-    return data.filter((it) => it.title.includes(searchString.query));
-  }
+  getMatchedOffers: (searchString) => {
+    return mocks.filter((it) => it.title.includes(searchString));
+  },
 };

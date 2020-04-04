@@ -1,118 +1,91 @@
 'use strict';
-
-const nanoid = require(`nanoid`);
-const {data, getData, routeMethod} = require(`../../storage`);
+const {storage} = require(`../../storage`);
 const {HttpCode} = require(`../../constants`);
 
-const INDEX_NOT_FOUND = -1;
-const ID_LENGTH = 6;
-
-const checkData = async () => {
-
-  if (!routeMethod.isLoaded) {
-    await getData();
-    routeMethod.isLoaded = true;
-  }
-
-};
-
 module.exports.getAll = async (req, res) => {
-  await checkData();
-  const offers = routeMethod.getAllOffers(data);
+  const offers = storage.getAllOffers();
   return res.json(offers);
 };
 
 module.exports.getOffer = async (req, res) => {
-  await checkData();
-  const index = routeMethod.getOfferIndex(data, req.params.offerId);
+  const offer = storage.getOfferById(req.params.offerId);
 
-  if (index === INDEX_NOT_FOUND) {
+  if (!offer) {
     return res.status(HttpCode.NOT_FOUND).end();
   }
 
-  return res.json(data[index]);
+  return res.json(offer);
 };
 
 module.exports.getComments = async (req, res) => {
-  await checkData();
-  const index = routeMethod.getOfferIndex(data, req.params.offerId);
+  const comments = storage.getComments(req.params.offerId);
 
-  if (index === INDEX_NOT_FOUND) {
+  if (!comments) {
     return res.status(HttpCode.NOT_FOUND).end();
   }
 
-  return res.json(data[index].comments);
+  return res.json(comments);
 };
 
 module.exports.removeOffer = async (req, res) => {
-  await checkData();
-  const index = routeMethod.getOfferIndex(data, req.params.offerId);
+  const offer = storage.removeOffer(req.params.offerId);
 
-  if (index === INDEX_NOT_FOUND) {
+  if (!offer) {
     return res.status(HttpCode.NOT_FOUND).end();
   }
 
-  data.splice(index, 1);
   return res.status(HttpCode.NO_CONTENT).end();
 };
 
 module.exports.removeComment = async (req, res) => {
-  await checkData();
-  const index = routeMethod.getOfferIndex(data, req.params.offerId);
-  const commentIndex = routeMethod.getCommentIndex(data, index, req.params.commentId);
+  const comment = storage.removeComment(req.params.offerId, req.params.commentId);
 
-  if (index === INDEX_NOT_FOUND || commentIndex === INDEX_NOT_FOUND) {
+  if (!comment) {
     return res.status(HttpCode.NOT_FOUND).end();
   }
 
-  data[index].comments.splice(commentIndex, 1);
   return res.status(HttpCode.NO_CONTENT).end();
 };
 
 module.exports.updateOffer = async (req, res) => {
-  await checkData();
-  const index = routeMethod.getOfferIndex(data, req.params.offerId);
-  const isValid = routeMethod.isValid(req.body);
-
-  if (index === INDEX_NOT_FOUND) {
-    return res.status(HttpCode.NOT_FOUND).end();
-  }
+  const isValid = storage.isValid(req.body);
 
   if (!isValid) {
     return res.status(HttpCode.BAD_REQUEST).send(`Bad request. Not all data`);
   }
 
-  const updatedOffer = routeMethod.createOfferObject(req.body);
-  data[index] = {...data[index], ...updatedOffer};
+  const offer = storage.updateOffer(req.params.offerId, req.body);
+
+  if (!offer) {
+    return res.status(HttpCode.NOT_FOUND).end();
+  }
+
   return res.status(HttpCode.OK).send(`Offer was updated.`);
 };
 
 module.exports.createComment = async (req, res) => {
-  await checkData();
-  const index = routeMethod.getOfferIndex(data, req.params.offerId);
+  const isCommentValid = storage.isCommentValid(req.body.text);
 
-  if (index === INDEX_NOT_FOUND) {
-    return res.status(HttpCode.NOT_FOUND).end();
-  }
-
-  if (!req.body.text || req.body.text === ``) {
+  if (!isCommentValid) {
     return res.status(HttpCode.BAD_REQUEST).send(`Bad request. No comment text`);
   }
 
-  const newComment = routeMethod.createNewCommentObject(nanoid(ID_LENGTH), req.body);
-  data[index].comments.unshift(newComment);
+  const comments = storage.addOfferComment(req.params.offerId, req.body);
+
+  if (!comments) {
+    return res.status(HttpCode.NOT_FOUND).end();
+  }
+
   return res.status(HttpCode.CREATED).end();
 };
 
 module.exports.createOffer = async (req, res) => {
-  await checkData();
-  const isValid = routeMethod.isValid(req.body);
+  const isValid = storage.isValid(req.body);
 
   if (!isValid) {
     return res.status(HttpCode.BAD_REQUEST).send(`Bad request. Not all data`);
   }
 
-  const newOffer = routeMethod.createNewOfferObject(nanoid(ID_LENGTH), req.body);
-  data.unshift(newOffer);
+  storage.addNewOffer(req.body);
   return res.status(HttpCode.CREATED).end();
 };

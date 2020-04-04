@@ -1,18 +1,8 @@
 'use strict';
 
-const {data, getData, routeMethod} = require(`../../storage`);
-
-const checkData = async () => {
-
-  if (!routeMethod.isLoaded) {
-    await getData();
-    routeMethod.isLoaded = true;
-  }
-
-};
+const {storage} = require(`../../storage`);
 
 module.exports.getAll = async (req, res) => {
-  await checkData();
-  const categories = routeMethod.getCategories(data);
+  const categories = storage.getCategories();
   return res.json(categories);
 };
