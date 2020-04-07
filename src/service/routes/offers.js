@@ -1,24 +1,18 @@
 'use strict';
 
 const express = require(`express`);
-const fs = require(`fs`).promises;
+const controller = require(`../controllers/offers`);
 const offersRouter = new express.Router();
 
-// offersRouter.use(express.json());
+offersRouter.use(express.json());
 
-const FILENAME = `mocks.json`;
-
-const onUserRequest = async (req, res) => {
-  try {
-    const content = await fs.readFile(FILENAME, `utf-8`);
-    // res.set(`Content-Type`, `application/json`);
-    // res.type(`application/json`);
-    return res.json(content.length > 0 ? content : `[]`);
-  } catch (err) {
-    return res.json(`[]`);
-  }
-};
-
-offersRouter.get(`/`, onUserRequest);
+offersRouter.get(`/`, controller.getAll);
+offersRouter.get(`/:offerId`, controller.getOffer);
+offersRouter.get(`/:offerId/comments`, controller.getComments);
+offersRouter.delete(`/:offerId`, controller.removeOffer);
+offersRouter.delete(`/:offerId/comments/:commentId`, controller.removeComment);
+offersRouter.put(`/:offerId`, controller.updateOffer);
+offersRouter.post(`/`, controller.createOffer);
+offersRouter.post(`/:offerId/comments`, controller.createComment);
 
 module.exports = offersRouter;
