@@ -13,7 +13,7 @@ module.exports.storage = {
           .reduce((acc, it) => !acc.includes(it) ? [...acc, it] : acc, []);
   },
   getAllOffers: () => {
-    return mocks.map((it) => it.title);
+    return mocks.map((it) => ({id: it.id, title: it.title}));
   },
   getOfferById: (offerId) => {
     const index = mocks.map((it) => it.id).indexOf(offerId);
@@ -40,6 +40,11 @@ module.exports.storage = {
   },
   updateOffer: (offerId, newData) => {
     const index = mocks.map((it) => it.id).indexOf(offerId);
+
+    if (index === NOT_FOUND_INDEX) {
+      return undefined;
+    }
+
     const {title, picture, description, type, category, sum} = newData;
     const updatedOffer = {
       title,
@@ -50,17 +55,22 @@ module.exports.storage = {
       sum,
     };
     mocks[index] = {...mocks[index], ...updatedOffer};
-    return index !== NOT_FOUND_INDEX ? mocks[index] : undefined;
+    return mocks[index];
   },
   addOfferComment: (offerId, comment) => {
     const index = mocks.map((it) => it.id).indexOf(offerId);
+
+    if (index === NOT_FOUND_INDEX) {
+      return undefined;
+    }
+
     const {text} = comment;
     const newComment = {
       id: nanoid(ID_LENGTH),
       text,
     };
-    return index !== NOT_FOUND_INDEX ?
-      mocks[index].comments.unshift(newComment) : undefined;
+    mocks[index].comments.unshift(newComment);
+    return newComment;
   },
   isCommentValid: (comment) => {
     return comment && comment.text !== `` ? true : false;
@@ -77,7 +87,8 @@ module.exports.storage = {
       sum,
       comments: [],
     };
-    return mocks.unshift(newOffer);
+    mocks.unshift(newOffer);
+    return newOffer;
   },
   getMatchedOffers: (searchString) => {
     return mocks.filter((it) => it.title.includes(searchString));

@@ -60,7 +60,7 @@ module.exports.updateOffer = async (req, res) => {
     return res.status(HttpCode.NOT_FOUND).end();
   }
 
-  return res.status(HttpCode.OK).send(`Offer was updated.`);
+  return res.status(HttpCode.OK).json(offer);
 };
 
 module.exports.createComment = async (req, res) => {
@@ -70,13 +70,13 @@ module.exports.createComment = async (req, res) => {
     return res.status(HttpCode.BAD_REQUEST).send(`Bad request. No comment text`);
   }
 
-  const comments = storage.addOfferComment(req.params.offerId, req.body);
+  const comment = storage.addOfferComment(req.params.offerId, req.body);
 
-  if (!comments) {
+  if (!comment) {
     return res.status(HttpCode.NOT_FOUND).end();
   }
 
-  return res.status(HttpCode.CREATED).end();
+  return res.status(HttpCode.CREATED).json(comment);
 };
 
 module.exports.createOffer = async (req, res) => {
@@ -86,6 +86,6 @@ module.exports.createOffer = async (req, res) => {
     return res.status(HttpCode.BAD_REQUEST).send(`Bad request. Not all data`);
   }
 
-  storage.addNewOffer(req.body);
-  return res.status(HttpCode.CREATED).end();
+  const offer = storage.addNewOffer(req.body);
+  return res.status(HttpCode.CREATED).json(offer);
 };
