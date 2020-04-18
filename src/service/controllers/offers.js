@@ -1,14 +1,15 @@
 'use strict';
 const {storage} = require(`../../storage`);
 const {HttpCode} = require(`../../constants`);
+const data = require(`../../../mocks`);
 
 module.exports.getAll = async (req, res) => {
-  const offers = storage.getAllOffers();
+  const offers = storage.getAllOffers(data);
   return res.json(offers);
 };
 
 module.exports.getOffer = async (req, res) => {
-  const offer = storage.getOfferById(req.params.offerId);
+  const offer = storage.getOfferById(data, req.params.offerId);
 
   if (!offer) {
     return res.status(HttpCode.NOT_FOUND).end();
@@ -18,7 +19,7 @@ module.exports.getOffer = async (req, res) => {
 };
 
 module.exports.getComments = async (req, res) => {
-  const comments = storage.getComments(req.params.offerId);
+  const comments = storage.getComments(data, req.params.offerId);
 
   if (!comments) {
     return res.status(HttpCode.NOT_FOUND).end();
@@ -28,7 +29,7 @@ module.exports.getComments = async (req, res) => {
 };
 
 module.exports.removeOffer = async (req, res) => {
-  const offer = storage.removeOffer(req.params.offerId);
+  const offer = storage.removeOffer(data, req.params.offerId);
 
   if (!offer) {
     return res.status(HttpCode.NOT_FOUND).end();
@@ -38,7 +39,7 @@ module.exports.removeOffer = async (req, res) => {
 };
 
 module.exports.removeComment = async (req, res) => {
-  const comment = storage.removeComment(req.params.offerId, req.params.commentId);
+  const comment = storage.removeComment(data, req.params.offerId, req.params.commentId);
 
   if (!comment) {
     return res.status(HttpCode.NOT_FOUND).end();
@@ -54,7 +55,7 @@ module.exports.updateOffer = async (req, res) => {
     return res.status(HttpCode.BAD_REQUEST).send(`Bad request. Not all data`);
   }
 
-  const offer = storage.updateOffer(req.params.offerId, req.body);
+  const offer = storage.updateOffer(data, req.params.offerId, req.body);
 
   if (!offer) {
     return res.status(HttpCode.NOT_FOUND).end();
@@ -70,7 +71,7 @@ module.exports.createComment = async (req, res) => {
     return res.status(HttpCode.BAD_REQUEST).send(`Bad request. No comment text`);
   }
 
-  const comment = storage.addOfferComment(req.params.offerId, req.body);
+  const comment = storage.addOfferComment(data, req.params.offerId, req.body);
 
   if (!comment) {
     return res.status(HttpCode.NOT_FOUND).end();
@@ -86,6 +87,6 @@ module.exports.createOffer = async (req, res) => {
     return res.status(HttpCode.BAD_REQUEST).send(`Bad request. Not all data`);
   }
 
-  const offer = storage.addNewOffer(req.body);
+  const offer = storage.addNewOffer(data, req.body);
   return res.status(HttpCode.CREATED).json(offer);
 };
