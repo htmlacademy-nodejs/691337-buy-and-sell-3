@@ -1,9 +1,10 @@
 'use strict';
 
-const chalk = require(`chalk`);
+const {getLogger} = require(`../../logger`);
 const app = require(`./app`);
 
 const DEFAULT_PORT = 3000;
+const logger = getLogger();
 
 module.exports = {
   name: `--server`,
@@ -11,6 +12,11 @@ module.exports = {
     const [userPort] = args;
     const port = Number(parseInt(userPort, 10)) || DEFAULT_PORT;
 
-    app.listen(port, () => console.log(chalk.green(`Ожидаю соединений на ${port}`)));
-  },
+    app.listen(port, () => {
+      logger.info(`Server start on ${port}`);
+    })
+    .on(`error`, (err) => {
+      logger.error(`Server can't start. Error: ${err}`);
+    });
+  }
 };
