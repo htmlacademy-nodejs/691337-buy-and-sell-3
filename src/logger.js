@@ -3,6 +3,7 @@
 const logger = require(`pino`)({
   name: `pino-and-express`,
   level: process.env.LOG_LEVEL || `info`,
+  prettyPrint: true,
 });
 
 module.exports = {
