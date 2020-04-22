@@ -1,47 +1,51 @@
 'use strict';
 
 const nanoid = require(`nanoid`);
-const mocks = require(`../mocks`);
 
 const NOT_FOUND_INDEX = -1;
 const ID_LENGTH = 6;
 
 module.exports.storage = {
-  getCategories: () => {
-    return mocks.map((it) => it.category)
+  getCategories: (data) => {
+    return data.map((it) => it.category)
           .flat()
           .reduce((acc, it) => !acc.includes(it) ? [...acc, it] : acc, []);
   },
-  getAllOffers: () => {
-    return mocks.map((it) => ({id: it.id, title: it.title}));
+  getAllOffers: (data) => {
+    return data.map((it) => ({id: it.id, title: it.title}));
   },
-  getOfferById: (offerId) => {
-    const index = mocks.map((it) => it.id).indexOf(offerId);
-    return index !== NOT_FOUND_INDEX ? mocks[index] : undefined;
+  getOfferById: (data, offerId) => {
+    const index = data.map((it) => it.id).indexOf(offerId);
+    return index !== NOT_FOUND_INDEX ? data[index] : undefined;
   },
-  getComments: (offerId) => {
-    const index = mocks.map((it) => it.id).indexOf(offerId);
-    return index !== NOT_FOUND_INDEX ? mocks[index].comments : undefined;
+  getComments: (data, offerId) => {
+    const index = data.map((it) => it.id).indexOf(offerId);
+    return index !== NOT_FOUND_INDEX ? data[index].comments : undefined;
   },
-  removeOffer: (offerId) => {
-    const index = mocks.map((it) => it.id).indexOf(offerId);
-    return index !== NOT_FOUND_INDEX ? mocks.splice(index, 1) : undefined;
+  removeOffer: (data, offerId) => {
+    const index = data.map((it) => it.id).indexOf(offerId);
+    return index !== NOT_FOUND_INDEX ? data.splice(index, 1) : undefined;
   },
-  removeComment: (offerId, commentId) => {
-    const index = mocks.map((it) => it.id).indexOf(offerId);
-    const commentIndex = mocks[index].comments
+  removeComment: (data, offerId, commentId) => {
+    const index = data.map((it) => it.id).indexOf(offerId);
+
+    if (index === NOT_FOUND_INDEX) {
+      return undefined;
+    }
+
+    const commentIndex = data[index].comments
       .map((it) => it.id).indexOf(commentId);
-    return index !== NOT_FOUND_INDEX && commentIndex !== NOT_FOUND_INDEX ?
-      mocks[index].comments.splice(commentIndex, 1) : undefined;
+    return commentIndex !== NOT_FOUND_INDEX ?
+      data[index].comments.splice(commentIndex, 1) : undefined;
   },
   isValid: (offer) => {
     const properties = [`category`, `description`, `picture`, `title`, `type`, `sum`];
     return properties.every((it) => offer.hasOwnProperty(it));
   },
-  updateOffer: (offerId, newData) => {
-    const index = mocks.map((it) => it.id).indexOf(offerId);
+  updateOffer: (data, offerId, newData) => {
+    const index = data.map((it) => it.id).indexOf(offerId);
 
-    if (index === NOT_FOUND_INDEX) {
+    if (index === NOT_FOUND_INDEX || !newData) {
       return undefined;
     }
 
@@ -54,11 +58,11 @@ module.exports.storage = {
       category,
       sum,
     };
-    mocks[index] = {...mocks[index], ...updatedOffer};
-    return mocks[index];
+    data[index] = {...data[index], ...updatedOffer};
+    return data[index];
   },
-  addOfferComment: (offerId, comment) => {
-    const index = mocks.map((it) => it.id).indexOf(offerId);
+  addOfferComment: (data, offerId, comment) => {
+    const index = data.map((it) => it.id).indexOf(offerId);
 
     if (index === NOT_FOUND_INDEX) {
       return undefined;
@@ -69,14 +73,20 @@ module.exports.storage = {
       id: nanoid(ID_LENGTH),
       text,
     };
-    mocks[index].comments.unshift(newComment);
+    data[index].comments.unshift(newComment);
     return newComment;
   },
   isCommentValid: (comment) => {
     return comment && comment.text !== `` ? true : false;
   },
-  addNewOffer: (newData) => {
+  addNewOffer: (data, newData) => {
+
+    if (!newData) {
+      return undefined;
+    }
+
     const {title, picture, description, type, category, sum} = newData;
+
     const newOffer = {
       id: nanoid(ID_LENGTH),
       title,
@@ -87,10 +97,10 @@ module.exports.storage = {
       sum,
       comments: [],
     };
-    mocks.unshift(newOffer);
+    data.unshift(newOffer);
     return newOffer;
   },
-  getMatchedOffers: (searchString) => {
-    return mocks.filter((it) => it.title.includes(searchString));
+  getMatchedOffers: (data, searchString) => {
+    return data.filter((it) => it.title.includes(searchString));
   },
 };

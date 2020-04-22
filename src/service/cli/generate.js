@@ -1,9 +1,9 @@
 'use strict';
 
 const fs = require(`fs`).promises;
-const chalk = require(`chalk`);
 const nanoid = require(`nanoid`);
 
+const {getLogger} = require(`../../logger`);
 const {getRandomInt, shuffle} = require(`../../utils`);
 
 const FILE_PATH_SENTENCES = `./data/sentences.txt`;
@@ -14,6 +14,8 @@ const FILE_PATH_COMMENTS = `./data/comments.txt`;
 
 const DEFAULT_COUNT = 1;
 const FILE_NAME = `mocks.json`;
+
+const logger = getLogger();
 
 const OfferType = {
   offer: `offer`,
@@ -35,7 +37,7 @@ const readContent = async (filepath) => {
     const content = await fs.readFile(filepath, `utf-8`);
     return content.trim().split(`\n`);
   } catch (err) {
-    console.error(chalk.red(err));
+    logger.error(err);
     return [];
   }
 };
@@ -73,16 +75,16 @@ module.exports = {
     const offerAmount = Number.parseInt(amount, 10) || DEFAULT_COUNT;
 
     if (offerAmount > 1000) {
-      console.log(chalk.red(`Не больше 1000 объявлений`));
+      logger.info(`Не больше 1000 объявлений`);
       return;
     }
     const content = JSON.stringify(generateOffers(offerAmount, titles, categories, sentences, comments));
 
     try {
       await fs.writeFile(FILE_NAME, content);
-      console.log(chalk.green(`Operation success. File created.`));
+      logger.info(`Operation success. File created.`);
     } catch (err) {
-      console.error(chalk.red(`Can't write data to file...`));
+      logger.error(`Can't write data to file...`);
     }
   },
 };

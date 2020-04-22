@@ -2,6 +2,7 @@
 
 const express = require(`express`);
 
+const {getLogger} = require(`../logger`);
 const offersRoutes = require(`./routes/offers`);
 const myRoutes = require(`./routes/my`);
 const searchRoutes = require(`./routes/search`);
@@ -10,6 +11,8 @@ const loginRoutes = require(`./routes/login`);
 
 const PORT = 8080;
 const PUBLIC_DIR = `markup`;
+
+const logger = getLogger();
 
 const Routes = {
   'offers': offersRoutes,
@@ -29,4 +32,9 @@ app.use(express.static(PUBLIC_DIR));
 Object.entries(Routes).forEach(([key, value]) => app.use(`/${key}`, value));
 app.get(`/`, (req, res) => res.render(`main`));
 
-app.listen(PORT, () => console.log(`Server is on ${PORT}`));
+app.listen(PORT, () => {
+  logger.info(`Server start on ${PORT}`);
+})
+.on(`error`, (err) => {
+  logger.error(`Server can't start. Error: ${err}`);
+});
