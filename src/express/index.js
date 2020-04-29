@@ -3,11 +3,12 @@
 const express = require(`express`);
 
 const {getLogger} = require(`../logger`);
+const mainRoute = require(`./routes/main`);
 const offersRoutes = require(`./routes/offers`);
 const myRoutes = require(`./routes/my`);
-const searchRoutes = require(`./routes/search`);
-const registerRoutes = require(`./routes/register`);
-const loginRoutes = require(`./routes/login`);
+const searchRoute = require(`./routes/search`);
+const registerRoute = require(`./routes/register`);
+const loginRoute = require(`./routes/login`);
 
 const PORT = 8080;
 const PUBLIC_DIR = `markup`;
@@ -15,11 +16,12 @@ const PUBLIC_DIR = `markup`;
 const logger = getLogger();
 
 const Routes = {
-  'offers': offersRoutes,
-  'my-tickets': myRoutes,
-  'search': searchRoutes,
-  'register': registerRoutes,
-  'login': loginRoutes,
+  '/': mainRoute,
+  '/offers': offersRoutes,
+  '/my': myRoutes,
+  '/search': searchRoute,
+  '/register': registerRoute,
+  '/login': loginRoute,
 };
 
 const app = express();
@@ -29,8 +31,8 @@ app.set(`view engine`, `pug`);
 
 app.use(express.static(PUBLIC_DIR));
 
-Object.entries(Routes).forEach(([key, value]) => app.use(`/${key}`, value));
-app.get(`/`, (req, res) => res.render(`main`));
+Object.entries(Routes).forEach(([key, value]) => app.use(key, value));
+//app.get(`/`, (req, res) => res.render(`main`));
 
 app.listen(PORT, () => {
   logger.info(`Server start on ${PORT}`);
