@@ -1,13 +1,28 @@
 'use strict';
 
 const express = require(`express`);
-const request = require(`request-promise-native`);
+const axios = require(`axios`);
+//const request = require(`request-promise-native`);
 const offersRouter = new express.Router();
 const url = `http://localhost:3000/api/offers`;
 
+/*
 const getOffer = async (req, res) => {
   try {
     const offerById = await request(`${url}/${req.params.id}`, {json: true});
+    console.log(offerById);
+  } catch (err) {
+    console.error(`Error: ${err}`);
+  }
+};
+*/
+const getData = (path) => {
+  return axios.get(path).then((content) => content.data);
+};
+
+const getOffer = async (req, res) => {
+  try {
+    const offerById = await getData(`${url}/${req.params.id}`);
     console.log(offerById);
   } catch (err) {
     console.error(`Error: ${err}`);
