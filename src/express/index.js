@@ -30,6 +30,8 @@ app.set(`views`, `./src/express/templates`);
 app.set(`view engine`, `pug`);
 
 app.use(express.static(PUBLIC_DIR));
+app.use(express.json());
+app.use(express.urlencoded({extended: false}));
 
 Object.entries(Routes).forEach(([key, value]) => app.use(key, value));
 //app.get(`/`, (req, res) => res.render(`main`));

@@ -19,3 +19,17 @@ module.exports.getOffer = async (req, res) => {
   }
 };
 
+module.exports.getNewOfferForm = (req, res) => {
+  return res.render(`offers/new-ticket`);
+};
+
+module.exports.addOffer = async (req, res) => {
+  const offer = req.body;
+  //const {title, description} = req.body;
+
+  console.log(req.body);
+
+  return res.json(offer);
+};
+
+
