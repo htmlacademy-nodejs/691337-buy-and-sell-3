@@ -1,8 +1,10 @@
 'use strict';
 
 const express = require(`express`);
+const controller = require(`../controllers/search`);
+
 const searchRouter = new express.Router();
 
-searchRouter.get(`/`, (req, res) => res.render(`search/search-result`));
+searchRouter.get(`/`, controller.getMatchedOffers);
 
 module.exports = searchRouter;

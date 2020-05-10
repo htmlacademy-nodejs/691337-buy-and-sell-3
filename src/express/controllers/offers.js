@@ -20,16 +20,24 @@ module.exports.getOffer = async (req, res) => {
 };
 
 module.exports.getNewOfferForm = (req, res) => {
-  return res.render(`offers/new-ticket`);
+  return res.render(`offers/new-ticket`, {data: {}});
 };
 
 module.exports.addOffer = async (req, res) => {
-  const offer = req.body;
-  //const {title, description} = req.body;
+  const offer = {
+    title: req.body[`ticket-name`],
+    picture: ``,
+    description: req.body.comment,
+    category: req.body.category,
+    type: req.body.action,
+    sum: req.body.price,
+  };
 
-  console.log(req.body);
-
-  return res.json(offer);
+  try {
+    await axios.post(url, offer);
+    return res.redirect(`/my`);
+  } catch (err) {
+    logger.error(`Error: ${err}`);
+    return res.render(`offers/new-ticket`, {data: offer});
+  }
 };
-
-
