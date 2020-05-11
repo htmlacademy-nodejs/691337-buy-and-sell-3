@@ -5,7 +5,7 @@
   "main": "./src/service/service.js",
   "scripts": {
     "test": "npm run eslint",
-    "test::rest": "jest .test.js e2e.test.js --coverage",
+    "test::rest": "jest .test.js e2e.test.js",
     "eslint": "eslint --ext .js src/",
     "start": "cross-env NODE_ENV=production LOG_LEVEL=error node ./src/service/service.js --server > ./service/logs/error.log",
     "start::debug": "cross-env NODE_ENV=development LOG_LEVEL=debug nodemon ./src/service/service.js --server | pino-pretty",
@@ -38,8 +38,6 @@
     "multer": "1.4.2",
     "nanoid": "2.1.11",
     "pino": "6.2.0",
-    "pug": "2.0.4",
-    "request": "2.88.2",
-    "request-promise-native": "1.0.8"
+    "pug": "2.0.4"
   }
 }
