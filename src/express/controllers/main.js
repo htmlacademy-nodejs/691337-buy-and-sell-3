@@ -1,17 +1,17 @@
 'use strict';
+
 const axios = require(`axios`);
 const {getLogger} = require(`../../logger`);
-const url = `http://localhost:3000/api/search`;
-
+const url = `http://localhost:3000/api/offers`;
 const logger = getLogger();
 const getData = (path) => {
   return axios.get(path).then((content) => content.data);
 };
 
-module.exports.getMatchedOffers = async (req, res) => {
+module.exports.getOffers = async (req, res) => {
   try {
-    const matchedOffers = await getData(`${url}?query=${encodeURI(req.query.search)}`);
-    return res.render(`search/search-result`, {data: matchedOffers});
+    const offers = await getData(url);
+    return res.render(`main`, {data: offers});
   } catch (err) {
     return logger.error(`Error: ${err}`);
   }

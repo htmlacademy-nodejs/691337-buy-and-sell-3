@@ -2,10 +2,8 @@
 
 const axios = require(`axios`);
 const {getLogger} = require(`../../logger`);
-
 const url = `http://localhost:3000/api/offers`;
 const logger = getLogger();
-
 const getData = (path) => {
   return axios.get(path).then((content) => content.data);
 };

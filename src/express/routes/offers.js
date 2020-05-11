@@ -7,7 +7,6 @@ const offersRouter = new express.Router();
 const upload = multer();
 
 offersRouter.use(express.json());
-offersRouter.use(express.urlencoded({extended: false}));
 
 offersRouter.get(`/category/:id`, (req, res) => res.render(`offers/category`));
 offersRouter.get(`/add`, controller.getNewOfferForm);

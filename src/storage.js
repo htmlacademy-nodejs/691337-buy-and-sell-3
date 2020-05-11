@@ -12,8 +12,7 @@ module.exports.storage = {
           .reduce((acc, it) => !acc.includes(it) ? [...acc, it] : acc, []);
   },
   getAllOffers: (data) => {
-    return data.map((it) => ({id: it.id, title: it.title, category: it.category,
-      description: it.description, picture: it.picture, type: it.type, sum: it.sum}));
+    return data;
   },
   getOfferById: (data, offerId) => {
     const index = data.map((it) => it.id).indexOf(offerId);

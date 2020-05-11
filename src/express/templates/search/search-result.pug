@@ -10,14 +10,14 @@ block content
       .search-results__wrapper
         p.search-results__label
           | Найдено
-          span.js-results 2 публикации
+          span.js-results  публикаций: #{data.length}
         ul.search-results__list
           each item in data
             li.search-results__item
               .ticket-card.ticket-card--color05
                 .ticket-card__img
-                  - const picture = item.picture
-                  img(src='/img/' + picture srcset='/img/' + picture alt='Изображение товара')
+                  - const picture = item.picture.split('.')[0]
+                  img(src='/img/' + picture + '.jpg' srcset='/img/' + picture + '@2x.jpg 2x' alt='Изображение товара')
                 .ticket-card__info
                   span.ticket-card__label= item.type
                   .ticket-card__categories

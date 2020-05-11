@@ -12,8 +12,8 @@ block content
           form.ticket-form__form.form(action='#' method='post' enctype='multipart/form-data' autocomplete='off')
             .ticket-form__avatar-container.js-preview-container.uploaded
               .ticket-form__avatar.js-preview
-                - const picture = data.picture
-                img(src='/img/' + picture srcset='/img/' + picture alt)
+                - const picture = data.picture.split('.')[0]
+                img(src='/img/' + picture + '.jpg' srcset='/img/' + picture + '@2x.jpg 2x' alt)
               .ticket-form__field-avatar
                 input#avatar.visually-hidden.js-file-field(type='file' name='avatar')
                 label(for='avatar')
@@ -32,7 +32,7 @@ block content
                   span Обязательное поле
               .ticket-form__row
                 select#category-field.form__select.js-multiple-select(name='category' data-label='Выбрать категорию публикации' multiple)
-                  option(value='1' selected)= data.category
+                  option(value='1' selected) Дом
                   option(value='2') Спорт и отдых
                   option(value='3') Авто
                   option(value='4') Электроника
