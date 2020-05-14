@@ -1,5 +1,9 @@
 'use strict';
 
+const axios = require(`axios`);
+const {getLogger} = require(`./logger`);
+const logger = getLogger();
+
 module.exports.getRandomInt = (min, max) => {
   min = Math.ceil(min);
   max = Math.floor(max);
@@ -13,4 +17,13 @@ module.exports.shuffle = (someArray) => {
   }
 
   return someArray;
+};
+
+module.exports.getData = async (path) => {
+  try {
+    const content = await axios.get(path);
+    return content.data;
+  } catch (err) {
+    return logger.error(`Error: ${err}`);
+  }
 };

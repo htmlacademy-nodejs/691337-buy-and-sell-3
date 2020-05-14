@@ -2,18 +2,20 @@
 
 const axios = require(`axios`);
 const {getLogger} = require(`../../logger`);
-const url = `http://localhost:3000/api/offers`;
+const {getData} = require(`../../utils`);
+const {URL, HttpCode} = require(`../../constants`);
 const logger = getLogger();
-const getData = (path) => {
-  return axios.get(path).then((content) => content.data);
-};
 
 module.exports.getOffer = async (req, res) => {
   try {
-    const offerById = await getData(`${url}/${req.params.id}`);
-    return res.render(`offers/ticket-edit`, {data: offerById});
+    const offerById = await getData(`${URL}/offers/${req.params.id}`);
+    if (!offerById) {
+      return res.status(HttpCode.NOT_FOUND).render(`errors/400`);
+    } else {
+      return res.status(HttpCode.OK).render(`offers/ticket-edit`, {data: offerById});
+    }
   } catch (err) {
-    return logger.error(`Error: ${err}`);
+    return logger.error(`${err}`);
   }
 };
 
@@ -24,7 +26,7 @@ module.exports.getNewOfferForm = (req, res) => {
 module.exports.addOffer = async (req, res) => {
   const offer = {
     title: req.body[`ticket-name`],
-    picture: ``,
+    picture: req.files[0].originalname,
     description: req.body.comment,
     category: req.body.category,
     type: req.body.action,
@@ -32,7 +34,7 @@ module.exports.addOffer = async (req, res) => {
   };
 
   try {
-    await axios.post(url, offer);
+    await axios.post(`${URL}/offers`, offer);
     return res.redirect(`/my`);
   } catch (err) {
     logger.error(`Error: ${err}`);

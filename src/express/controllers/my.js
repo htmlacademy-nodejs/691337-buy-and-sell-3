@@ -1,18 +1,15 @@
 'use strict';
 const axios = require(`axios`);
 const {getLogger} = require(`../../logger`);
-const url = `http://localhost:3000/api/offers`;
+const {getData} = require(`../../utils`);
+const {URL} = require(`../../constants`);
 
 const OFFER_AMOUNT = 3;
 const logger = getLogger();
 
-const getData = (path) => {
-  return axios.get(path).then((content) => content.data);
-};
-
 module.exports.getOffers = async (req, res) => {
   try {
-    const offers = await getData(url);
+    const offers = await getData(`${URL}/offers`);
     return res.render(`offers/my-tickets`, {data: offers});
   } catch (err) {
     return logger.error(`Error: ${err}`);
@@ -21,9 +18,9 @@ module.exports.getOffers = async (req, res) => {
 
 module.exports.getComments = async (req, res) => {
   try {
-    const data = await getData(url);
+    const data = await getData(`${URL}/offers`);
     const offerUrls = data.map((it) => it.id).slice(0, OFFER_AMOUNT)
-    .map((it) => `${url}/${it}`);
+    .map((it) => `${URL}/offers/${it}`);
     const commentsUrls = offerUrls.map((it) => `${it}/comments`);
     const offersData = await axios.all(offerUrls.map((it) => getData(it)));
     const commentsData = await axios.all(commentsUrls.map((it) => getData(it)));
