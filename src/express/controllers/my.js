@@ -1,18 +1,20 @@
 'use strict';
 const axios = require(`axios`);
-const {getLogger} = require(`../../logger`);
 const {getData} = require(`../../utils`);
-const {URL} = require(`../../constants`);
+const {URL, HttpCode} = require(`../../constants`);
 
 const OFFER_AMOUNT = 3;
-const logger = getLogger();
 
 module.exports.getOffers = async (req, res) => {
   try {
     const offers = await getData(`${URL}/offers`);
     return res.render(`offers/my-tickets`, {data: offers});
   } catch (err) {
-    return logger.error(`Error: ${err}`);
+    if (res.statusCode === HttpCode.INTERNAL_SERVER_ERROR) {
+      return res.render(`errors/500`);
+    } else {
+      return res.render(`errors/400`);
+    }
   }
 };
 
@@ -26,7 +28,11 @@ module.exports.getComments = async (req, res) => {
     const commentsData = await axios.all(commentsUrls.map((it) => getData(it)));
     return res.render(`comments/comments`, {offers: offersData, comments: commentsData});
   } catch (err) {
-    return logger.error(`Error: ${err}`);
+    if (res.statusCode === HttpCode.INTERNAL_SERVER_ERROR) {
+      return res.render(`errors/500`);
+    } else {
+      return res.render(`errors/400`);
+    }
   }
 };
 

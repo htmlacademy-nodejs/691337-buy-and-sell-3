@@ -24,6 +24,7 @@ module.exports.getData = async (path) => {
     const content = await axios.get(path);
     return content.data;
   } catch (err) {
-    return logger.error(`Error: ${err}`);
+    logger.error(`Error: ${err.message}`);
+    throw err;
   }
 };

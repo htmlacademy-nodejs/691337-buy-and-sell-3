@@ -9,24 +9,36 @@ const logger = getLogger();
 module.exports.getOffer = async (req, res) => {
   try {
     const offerById = await getData(`${URL}/offers/${req.params.id}`);
-    if (!offerById) {
-      return res.status(HttpCode.NOT_FOUND).render(`errors/400`);
-    } else {
-      return res.status(HttpCode.OK).render(`offers/ticket-edit`, {data: offerById});
-    }
+    return res.render(`offers/ticket-edit`, {data: offerById});
   } catch (err) {
-    return logger.error(`${err}`);
+    if (res.statusCode === HttpCode.INTERNAL_SERVER_ERROR) {
+      return res.render(`errors/500`);
+    } else {
+      return res.render(`errors/400`);
+    }
   }
 };
 
 module.exports.getNewOfferForm = (req, res) => {
-  return res.render(`offers/new-ticket`, {data: {}});
+  try {
+    return res.render(`offers/new-ticket`, {data: {}});
+  } catch (err) {
+    if (res.statusCode === HttpCode.INTERNAL_SERVER_ERROR) {
+      return res.render(`errors/500`);
+    } else {
+      return res.render(`errors/400`);
+    }
+  }
 };
 
 module.exports.addOffer = async (req, res) => {
+  const getPicture = () => {
+    return req.files.length > 0 ? req.files[0].originalname : ``;
+  };
+
   const offer = {
     title: req.body[`ticket-name`],
-    picture: req.files[0].originalname,
+    picture: getPicture(),
     description: req.body.comment,
     category: req.body.category,
     type: req.body.action,
