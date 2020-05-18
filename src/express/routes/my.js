@@ -1,10 +1,11 @@
 'use strict';
 
 const express = require(`express`);
+const controller = require(`../controllers/my`);
 
 const myRouter = new express.Router();
 
-myRouter.get(`/`, (req, res) => res.render(`offers/my-tickets`));
-myRouter.get(`/comments`, (req, res) => res.render(`comments/comments`));
+myRouter.get(`/`, controller.getOffers);
+myRouter.get(`/comments`, controller.getComments);
 
 module.exports = myRouter;

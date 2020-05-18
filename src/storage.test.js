@@ -3,7 +3,6 @@ const {storage} = require(`./storage`);
 
 const mocks = require(`../__fixtures__/test-mocks`);
 const categoriesExpected = require(`../__fixtures__/categories`);
-const offersExpected = require(`../__fixtures__/offers`);
 const offerExpected = require(`../__fixtures__/offer-id`);
 const commentExpected = require(`../__fixtures__/comment`);
 
@@ -22,7 +21,7 @@ const negativeCases = [
 
 const positiveCases = [
   [storage.getCategories, categoriesExpected, mocks],
-  [storage.getAllOffers, offersExpected, mocks],
+  [storage.getAllOffers, mocks, mocks],
   [storage.getOfferById, offerExpected, mocks, `Pr-jOR`],
   [storage.removeOffer, [offerExpected], mocks, `Pr-jOR`],
   [storage.removeComment, [commentExpected], mocks, `pk29O5`, `TWCRqj`],

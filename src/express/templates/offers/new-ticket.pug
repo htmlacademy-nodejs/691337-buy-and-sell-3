@@ -9,7 +9,7 @@ block content
       .ticket-form__wrapper
         h1.ticket-form__title Новая публикация
         .ticket-form__tile
-          form.ticket-form__form.form(action='#' method='post' enctype='multipart/form-data' autocomplete='off')
+          form.ticket-form__form.form(action='/offers/add' method='post' enctype='multipart/form-data' autocomplete='off')
             .ticket-form__avatar-container.js-preview-container
               .ticket-form__avatar.js-preview
               .ticket-form__field-avatar
@@ -20,23 +20,22 @@ block content
             .ticket-form__content
               .ticket-form__row
                 .form__field
-                  input#ticket-name.js-field(type='text' name='ticket-name' required)
+                  input#ticket-name.js-field(type='text' name='ticket-name' required value=data.title)
                   label(for='ticket-name') Название
                   span Обязательное поле
               .ticket-form__row
                 .form__field
-                  textarea#comment-field.js-field(name='comment' cols='30' rows='10' maxlength='400' minlength='50')
+                  textarea#comment-field.js-field(name='comment' cols='30' rows='10' maxlength='400' minlength='50')= data.description
                   label(for='comment-field') Описание
                   span Обязательное поле
               .ticket-form__row
                 select#category-field.form__select.js-multiple-select(name='category' data-label='Выбрать категорию публикации')
-                  option(value='1') Дом
-                  option(value='2') Спорт и отдых
-                  option(value='3') Авто
-                  option(value='4') Электроника
+                  - const categories = ['Дом', 'Спорт и отдых', 'Авто', 'Электроника']
+                  each item in categories
+                    option(value=item)= item
               .ticket-form__row
                 .form__field.form__field--price
-                  input#price-field.js-field.js-price(type='number' name='price' min='1' required)
+                  input#price-field.js-field.js-price(type='number' name='price' min='1' value=data.sum required)
                   label(for='price-field') Цена
                   span Обязательное поле
                 .form__switch.switch

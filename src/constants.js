@@ -1,6 +1,7 @@
 'use strict';
 
 module.exports.USER_ARGV_INDEX = 2;
+module.exports.URL = `http://localhost:3000/api`;
 module.exports.DEFAULT_COMMAND = `--help`;
 module.exports.ExitCode = {
   error: 1,
