@@ -2,8 +2,8 @@
 
 const axios = require(`axios`);
 const {getLogger} = require(`../../logger`);
-const {getData} = require(`../../utils`);
-const {URL, HttpCode} = require(`../../constants`);
+const {getData, renderError} = require(`../../utils`);
+const {URL} = require(`../../constants`);
 const logger = getLogger();
 
 module.exports.getOffer = async (req, res) => {
@@ -11,11 +11,7 @@ module.exports.getOffer = async (req, res) => {
     const offerById = await getData(`${URL}/offers/${req.params.id}`);
     return res.render(`offers/ticket-edit`, {data: offerById});
   } catch (err) {
-    if (res.statusCode === HttpCode.INTERNAL_SERVER_ERROR) {
-      return res.render(`errors/500`);
-    } else {
-      return res.render(`errors/400`);
-    }
+    return renderError(err.response.status, res);
   }
 };
 
@@ -23,11 +19,7 @@ module.exports.getNewOfferForm = (req, res) => {
   try {
     return res.render(`offers/new-ticket`, {data: {}});
   } catch (err) {
-    if (res.statusCode === HttpCode.INTERNAL_SERVER_ERROR) {
-      return res.render(`errors/500`);
-    } else {
-      return res.render(`errors/400`);
-    }
+    return renderError(err.response.status, res);
   }
 };
 
