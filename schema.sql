@@ -23,12 +23,13 @@ CREATE TABLE users
 CREATE TABLE offers
 (
     id SERIAL PRIMARY KEY,
-    title VARCHAR (100) NOT NULL,
-    picture_name VARCHAR (50),
-    description_text VARCHAR (1000),
-    price INTEGER NOT NULL,
-    offer_type VARCHAR (10) NOT NULL,
+    title TEXT NOT NULL,
     created_date DATE,
+    picture_name TEXT,
+    price INTEGER NOT NULL,
+    offer_type TEXT NOT NULL,
+    description_text TEXT,
+
     author_id INTEGER,
 
     FOREIGN KEY (author_id) REFERENCES users (id)
