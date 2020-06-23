@@ -12,24 +12,25 @@ DROP TABLE IF EXISTS offers_categories;
 
 CREATE TABLE users
 (
-    id SERIAL PRIMARY KEY,
-    first_name VARCHAR (50) NOT NULL,
-    last_name VARCHAR (50) NOT NULL,
-    email VARCHAR (50) NOT NULL,
-    pass VARCHAR (50) NOT NULL,
-    avatar_name VARCHAR (50) NOT NULL
+    id BIGSERIAL PRIMARY KEY,
+    first_name TEXT NOT NULL,
+    last_name TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    pass TEXT NOT NULL,
+    avatar_name TEXT NOT NULL
 );
 
 CREATE TABLE offers
 (
-    id SERIAL PRIMARY KEY,
-    title VARCHAR (100) NOT NULL,
-    picture_name VARCHAR (50),
-    description_text VARCHAR (1000),
-    price INTEGER NOT NULL,
-    offer_type VARCHAR (10) NOT NULL,
+    id BIGSERIAL PRIMARY KEY,
+    title TEXT NOT NULL,
     created_date DATE,
-    author_id INTEGER,
+    picture_name TEXT,
+    price BIGINT NOT NULL,
+    offer_type TEXT NOT NULL,
+    description_text TEXT,
+
+    author_id BIGINT,
 
     FOREIGN KEY (author_id) REFERENCES users (id)
         ON DELETE CASCADE
@@ -38,10 +39,10 @@ CREATE TABLE offers
 
 CREATE TABLE comments
 (
-    id SERIAL PRIMARY KEY,
-    comment_text VARCHAR (1000) NOT NULL,
-    offer_id INTEGER,
-    author_id INTEGER,
+    id BIGSERIAL PRIMARY KEY,
+    comment_text TEXT NOT NULL,
+    offer_id BIGINT,
+    author_id BIGINT,
 
     FOREIGN KEY (offer_id) REFERENCES offers (id)
         ON DELETE CASCADE
@@ -53,15 +54,15 @@ CREATE TABLE comments
 
 CREATE TABLE categories
 (
-    id SERIAL PRIMARY KEY,
-    title VARCHAR (50) NOT NULL,
-    picture_name VARCHAR (50) NOT NULL
+    id BIGSERIAL PRIMARY KEY,
+    title TEXT NOT NULL,
+    picture_name TEXT NOT NULL
 );
 
 CREATE TABLE offers_categories
 (
-    offer_id INTEGER NOT NULL,
-    category_id INTEGER NOT NULL,
+    offer_id BIGINT NOT NULL,
+    category_id BIGINT NOT NULL,
 
     CONSTRAINT offers_categories_pk PRIMARY KEY (offer_id, category_id),
 
@@ -73,5 +74,4 @@ CREATE TABLE offers_categories
         ON UPDATE CASCADE
 );
 
-CREATE UNIQUE INDEX user_email ON users (email);
 CREATE INDEX offer_title ON offers (title);
