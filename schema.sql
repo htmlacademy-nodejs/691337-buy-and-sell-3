@@ -12,7 +12,7 @@ DROP TABLE IF EXISTS offers_categories;
 
 CREATE TABLE users
 (
-    id BIGSERIAL PRIMARY KEY,
+    user_id BIGSERIAL PRIMARY KEY,
     first_name TEXT NOT NULL,
     last_name TEXT NOT NULL,
     email TEXT NOT NULL UNIQUE,
@@ -22,8 +22,8 @@ CREATE TABLE users
 
 CREATE TABLE offers
 (
-    id BIGSERIAL PRIMARY KEY,
-    title TEXT NOT NULL,
+    offer_id BIGSERIAL PRIMARY KEY,
+    offer_title TEXT NOT NULL,
     created_date DATE,
     picture_name TEXT,
     price BIGINT NOT NULL,
@@ -32,30 +32,30 @@ CREATE TABLE offers
 
     author_id BIGINT,
 
-    FOREIGN KEY (author_id) REFERENCES users (id)
+    FOREIGN KEY (author_id) REFERENCES users (user_id)
         ON DELETE CASCADE
         ON UPDATE CASCADE
 );
 
 CREATE TABLE comments
 (
-    id BIGSERIAL PRIMARY KEY,
+    comment_id BIGSERIAL PRIMARY KEY,
     comment_text TEXT NOT NULL,
     offer_id BIGINT,
     author_id BIGINT,
 
-    FOREIGN KEY (offer_id) REFERENCES offers (id)
+    FOREIGN KEY (offer_id) REFERENCES offers (offer_id)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
-    FOREIGN KEY (author_id) REFERENCES users (id)
+    FOREIGN KEY (author_id) REFERENCES users (user_id)
         ON DELETE CASCADE
         ON UPDATE CASCADE
 );
 
 CREATE TABLE categories
 (
-    id BIGSERIAL PRIMARY KEY,
-    title TEXT NOT NULL,
+    category_id BIGSERIAL PRIMARY KEY,
+    category_title TEXT NOT NULL,
     picture_name TEXT NOT NULL
 );
 
@@ -66,12 +66,12 @@ CREATE TABLE offers_categories
 
     CONSTRAINT offers_categories_pk PRIMARY KEY (offer_id, category_id),
 
-    FOREIGN KEY (offer_id) REFERENCES offers (id)
+    FOREIGN KEY (offer_id) REFERENCES offers (offer_id)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
-    FOREIGN KEY (category_id) REFERENCES categories (id)
+    FOREIGN KEY (category_id) REFERENCES categories (category_id)
         ON DELETE CASCADE
         ON UPDATE CASCADE
 );
 
-CREATE INDEX offer_title ON offers (title);
+CREATE INDEX offer_title ON offers (offer_title);
