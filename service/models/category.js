@@ -19,8 +19,8 @@ module.exports = (sequelize, DataTypes, Model) => {
     },
   }, {
     sequelize,
-    timestamps: true,
-    paranoid: true,
+    timestamps: false,
+    paranoid: false,
   });
 
   return Category;
