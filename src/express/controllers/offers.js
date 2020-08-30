@@ -15,6 +15,20 @@ module.exports.getOffer = async (req, res) => {
   }
 };
 
+module.exports.getOffersByCategory = async (req, res) => {
+  try {
+    const currentPage = req.query.page;
+    //const currentPage = parseInt(req.query.page, 10);
+    console.log(currentPage);
+    const offers = await getData(`${URL}/offers/category/${req.params.id}?page=${currentPage}`);
+    return res.render(`offers/category`, {data: offers});
+
+    //api должен прислать данные, разбитые по массивами на нужное кол-во страниц
+  } catch (err) {
+    return renderError(err.response.status, res);
+  }
+};
+
 module.exports.getNewOfferForm = (req, res) => {
   try {
     return res.render(`offers/new-ticket`, {data: {}});
@@ -45,3 +59,6 @@ module.exports.addOffer = async (req, res) => {
     return res.render(`offers/new-ticket`, {data: offer});
   }
 };
+
+//URL = `http://localhost:3000/api`
+

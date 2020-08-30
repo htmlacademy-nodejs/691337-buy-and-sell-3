@@ -3,6 +3,9 @@
 const {Op} = require(`sequelize`);
 const {Offer, Comment, Category} = require(`../service/db`);
 
+const START_PAGE = 1;
+const OFFERS_PER_PAGE = 8;
+
 const offerAttributes = [
   [`offer_id`, `id`],
   [`description_text`, `description`],
@@ -33,6 +36,16 @@ module.exports.storage = {
     return Offer.findByPk(offerId, {
       attributes: offerAttributes
     });
+  },
+  getOffersByCategoryId: async (categoryId, page) => {
+    const currentPage = parseInt(page, 10) || START_PAGE;
+    const category = await Category.findByPk(categoryId);
+    const offers = await category.getOffers({
+      attributes: offerAttributes,
+      offset: currentPage * OFFERS_PER_PAGE - OFFERS_PER_PAGE,
+      limit: OFFERS_PER_PAGE
+    });
+    return offers;
   },
   getComments: async (offerId) => {
     const offer = await Offer.findByPk(offerId);

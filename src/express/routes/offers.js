@@ -8,7 +8,7 @@ const upload = multer();
 
 offersRouter.use(express.json());
 
-offersRouter.get(`/category/:id`, (req, res) => res.render(`offers/category`));
+offersRouter.get(`/category/:id`, controller.getOffersByCategory);
 offersRouter.get(`/add`, controller.getNewOfferForm);
 offersRouter.post(`/add`, upload.any(), controller.addOffer);
 offersRouter.get(`/edit/:id`, controller.getOffer);

@@ -9,6 +9,7 @@ offersRouter.use(express.json());
 offersRouter.get(`/`, controller.getAll);
 offersRouter.get(`/:offerId`, controller.getOffer);
 offersRouter.get(`/:offerId/comments`, controller.getComments);
+offersRouter.get(`/category/:categoryId`, controller.getOffersByCategory);
 offersRouter.delete(`/:offerId`, controller.removeOffer);
 offersRouter.delete(`/:offerId/comments/:commentId`, controller.removeComment);
 offersRouter.put(`/:offerId`, controller.updateOffer);
