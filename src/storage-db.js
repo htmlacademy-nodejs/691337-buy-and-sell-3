@@ -5,6 +5,7 @@ const {Offer, Comment, Category} = require(`../service/db`);
 
 const START_PAGE = 1;
 const OFFERS_PER_PAGE = 8;
+const PAGES_AMOUNT_MAX = 5;
 
 const offerAttributes = [
   [`offer_id`, `id`],
@@ -19,6 +20,41 @@ const commentAttributes = [
   [`comment_id`, `id`],
   [`comment_text`, `text`]
 ];
+
+
+const categoryAttributes = [
+  [`category_id`, `id`],
+  [`category_title`, `title`],
+  [`picture_name`, `picture`]
+];
+
+const getCategoryTitle = (categories) => {
+  return categories.map((it) => it.category_title);
+};
+const normalizeOfferData = (offer) => {
+  const {id, title, type, sum, picture, description, categories} = offer.dataValues;
+  return {
+    id,
+    title,
+    type,
+    sum,
+    description,
+    picture,
+    category: getCategoryTitle(categories),
+  };
+};
+
+const getPagesToView = (pagesAmount, currentPage) => {
+  const offset = currentPage > PAGES_AMOUNT_MAX ? currentPage - PAGES_AMOUNT_MAX : 0;
+  const firstIndex = START_PAGE + offset;
+  const lastIndex = pagesAmount < PAGES_AMOUNT_MAX ? pagesAmount : PAGES_AMOUNT_MAX + offset;
+  return {
+    firstIndex,
+    lastIndex,
+    previous: offset > 0,
+    next: pagesAmount > PAGES_AMOUNT_MAX && pagesAmount > lastIndex
+  };
+};
 
 module.exports.storage = {
   getCategories: async () => {
@@ -38,14 +74,24 @@ module.exports.storage = {
     });
   },
   getOffersByCategoryId: async (categoryId, page) => {
+    const category = await Category.findByPk(categoryId, {
+      attributes: [`category_id`]
+    });
+    const offersAmount = await category.countOffers();
+    const pagesAmount = Math.ceil(offersAmount / OFFERS_PER_PAGE);
     const currentPage = parseInt(page, 10) || START_PAGE;
-    const category = await Category.findByPk(categoryId);
-    const offers = await category.getOffers({
+    const rawOffers = await category.getOffers({
       attributes: offerAttributes,
+      include: [`categories`],
       offset: currentPage * OFFERS_PER_PAGE - OFFERS_PER_PAGE,
       limit: OFFERS_PER_PAGE
     });
-    return offers;
+    const offers = rawOffers.map((it) => normalizeOfferData(it));
+    const categoryData = await Category.findByPk(categoryId, {
+      attributes: categoryAttributes
+    });
+    const pagesToView = getPagesToView(pagesAmount, currentPage);
+    return {offers, offersAmount, pagesAmount, currentPage, categoryData, pagesToView};
   },
   getComments: async (offerId) => {
     const offer = await Offer.findByPk(offerId);

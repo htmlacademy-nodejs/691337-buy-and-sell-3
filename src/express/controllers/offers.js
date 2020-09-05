@@ -18,12 +18,17 @@ module.exports.getOffer = async (req, res) => {
 module.exports.getOffersByCategory = async (req, res) => {
   try {
     const currentPage = req.query.page;
-    //const currentPage = parseInt(req.query.page, 10);
-    console.log(currentPage);
-    const offers = await getData(`${URL}/offers/category/${req.params.id}?page=${currentPage}`);
-    return res.render(`offers/category`, {data: offers});
+    const data = await getData(`${URL}/offers/category/${req.params.id}/?page=${currentPage}`);
+    return res.render(`offers/category`,
+        {
+          offers: data.offers,
+          amount: data.offersAmount,
+          pages: data.pagesAmount,
+          current: data.currentPage,
+          category: data.categoryData,
+          view: data.pagesToView
+        });
 
-    //api должен прислать данные, разбитые по массивами на нужное кол-во страниц
   } catch (err) {
     return renderError(err.response.status, res);
   }
@@ -60,5 +65,4 @@ module.exports.addOffer = async (req, res) => {
   }
 };
 
-//URL = `http://localhost:3000/api`
 

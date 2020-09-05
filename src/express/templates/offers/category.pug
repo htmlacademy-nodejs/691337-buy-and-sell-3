@@ -54,38 +54,43 @@ block content
       h2.visually-hidden Предложения из категории электроника
       .tickets-list__wrapper
         .tickets-list__header
-          p.tickets-list__title
-            | Электроника
-            b.js-qty 62
-        ul
-          each item in data
-            li.tickets-list__item
-              .ticket-card.ticket-card--color06
-                .ticket-card__img
-                  img(src='/img/item06.jpg' srcset='/img/item06@2x.jpg 2x' alt='Изображение товара')
-                .ticket-card__info
-                  span.ticket-card__label= item.type
-                  .ticket-card__categories
-                    a(href='#') Электроника
-                  .ticket-card__header
-                    h3.ticket-card__title
-                      a(href='#')= item.title
-                    p.ticket-card__price
-                      span.js-sum= item.sum
-                      |  ₽
-                  .ticket-card__desc
-                    p= item.description
-        .tickets-list__pagination
-          ul.pagination
-            li
-              a.active(href='#') 1
-            li
-              a(href='/offers/category/4/?page=2') 2
-            li
-              a(href='#') 3
-            li
-              a(href='#') 4
-            li
-              a(href='#') 5
-            li
-              a(href='#') дальше
+          p.tickets-list__title= category.title
+            b.js-qty= ' ' + amount
+        if amount > 0
+          ul
+            each item in offers
+              li.tickets-list__item
+                .ticket-card.ticket-card--color06
+                  .ticket-card__img
+                    img(src='/img/' + item.picture srcset='/img/' + item.picture alt='Изображение товара')
+                  .ticket-card__info
+                    span.ticket-card__label= item.type
+                    .ticket-card__categories
+                      a(href='#')= item.category
+                    .ticket-card__header
+                      h3.ticket-card__title
+                        a(href='#')= item.title
+                      p.ticket-card__price
+                        span.js-sum= item.sum
+                        |  ₽
+                    .ticket-card__desc
+                      p= item.description
+          .tickets-list__pagination
+            ul.pagination
+              - if (view.previous)
+                li
+                  a(href='/offers/category/' + category.id + '/?page=' + (view.firstIndex - 1)) Назад
+              - for (let i = view.firstIndex; i <= view.lastIndex; i += 1)
+                - if (i === current)
+                  li
+                    a.active(href='javascript:void(0)')= i
+                - else
+                  li
+                    a(href='/offers/category/' + category.id + '/?page=' + i)= i
+              - if (view.next)
+                li
+                  a(href='/offers/category/' + category.id + '/?page=' + (view.lastIndex + 1)) Вперед
+        else
+          .message
+            .message__text
+              p На сайте еще не опубликовано ни одного объявления.

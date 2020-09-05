@@ -24,7 +24,6 @@ module.exports.getOffer = async (req, res) => {
 };
 
 module.exports.getOffersByCategory = async (req, res) => {
-  console.log(req.query);
   const offers = await storage.getOffersByCategoryId(req.params.categoryId, req.query.page);
   return res.json(offers);
 };
