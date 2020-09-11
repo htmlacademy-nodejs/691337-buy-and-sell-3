@@ -21,7 +21,6 @@ const commentAttributes = [
   [`comment_text`, `text`]
 ];
 
-
 const categoryAttributes = [
   [`category_id`, `id`],
   [`category_title`, `title`],
@@ -31,6 +30,7 @@ const categoryAttributes = [
 const getCategoryTitle = (categories) => {
   return categories.map((it) => it.category_title);
 };
+
 const normalizeOfferData = (offer) => {
   const {id, title, type, sum, picture, description, categories} = offer.dataValues;
   return {
@@ -58,14 +58,23 @@ const getPagesToView = (pagesAmount, currentPage) => {
 
 module.exports.storage = {
   getCategories: async () => {
-    const categories = await Category.findAll({
-      attributes: [`category_title`]
+    const rawCategories = await Category.findAll({
+      attributes: categoryAttributes
     });
-    return categories.map((it) => it.category_title);
+    const categories = await Promise.all(Array(rawCategories.length)
+      .fill({})
+      .map((async (it, index) => {
+        const {id, title, picture} = rawCategories[index].dataValues;
+        const currentCategory = await Category.findByPk(id);
+        const offersAmount = await currentCategory.countOffers();
+        return {id, title, picture, offersAmount};
+      })));
+    return categories.filter((it) => it.offersAmount > 0);
   },
   getAllOffers: () => {
     return Offer.findAll({
-      attributes: offerAttributes
+      attributes: offerAttributes,
+      limit: OFFERS_PER_PAGE
     });
   },
   getOfferById: (offerId) => {

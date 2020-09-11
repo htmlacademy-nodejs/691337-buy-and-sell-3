@@ -5,7 +5,8 @@ const {URL} = require(`../../constants`);
 module.exports.getOffers = async (req, res) => {
   try {
     const offers = await getData(`${URL}/offers`);
-    return res.render(`main`, {data: offers});
+    const categories = await getData(`${URL}/categories`);
+    return res.render(`main`, {data: offers, categories});
   } catch (err) {
     return renderError(err.response.status, res);
   }

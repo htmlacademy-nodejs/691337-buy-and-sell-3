@@ -18,6 +18,7 @@ module.exports.getOffer = async (req, res) => {
 module.exports.getOffersByCategory = async (req, res) => {
   try {
     const currentPage = req.query.page;
+    const categories = await getData(`${URL}/categories`);
     const data = await getData(`${URL}/offers/category/${req.params.id}/?page=${currentPage}`);
     return res.render(`offers/category`,
         {
@@ -26,7 +27,8 @@ module.exports.getOffersByCategory = async (req, res) => {
           pages: data.pagesAmount,
           current: data.currentPage,
           category: data.categoryData,
-          view: data.pagesToView
+          view: data.pagesToView,
+          categories
         });
 
   } catch (err) {
