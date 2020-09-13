@@ -15,6 +15,27 @@ module.exports.getOffer = async (req, res) => {
   }
 };
 
+module.exports.getOffersByCategory = async (req, res) => {
+  try {
+    const currentPage = req.query.page;
+    const categories = await getData(`${URL}/categories`);
+    const data = await getData(`${URL}/offers/category/${req.params.id}/?page=${currentPage}`);
+    return res.render(`offers/category`,
+        {
+          offers: data.offers,
+          amount: data.offersAmount,
+          pages: data.pagesAmount,
+          current: data.currentPage,
+          category: data.categoryData,
+          view: data.pagesToView,
+          categories
+        });
+
+  } catch (err) {
+    return renderError(err.response.status, res);
+  }
+};
+
 module.exports.getNewOfferForm = (req, res) => {
   try {
     return res.render(`offers/new-ticket`, {data: {}});
@@ -45,3 +66,5 @@ module.exports.addOffer = async (req, res) => {
     return res.render(`offers/new-ticket`, {data: offer});
   }
 };
+
+

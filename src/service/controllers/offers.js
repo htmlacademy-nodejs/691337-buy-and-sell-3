@@ -23,6 +23,11 @@ module.exports.getOffer = async (req, res) => {
   return res.json(offer);
 };
 
+module.exports.getOffersByCategory = async (req, res) => {
+  const offers = await storage.getOffersByCategoryId(req.params.categoryId, req.query.page);
+  return res.json(offers);
+};
+
 module.exports.getComments = async (req, res) => {
   const comments = await storage.getComments(req.params.offerId);
 

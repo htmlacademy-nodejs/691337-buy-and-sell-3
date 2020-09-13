@@ -3,6 +3,10 @@
 const {Op} = require(`sequelize`);
 const {Offer, Comment, Category} = require(`../service/db`);
 
+const START_PAGE = 1;
+const OFFERS_PER_PAGE = 8;
+const PAGES_AMOUNT_MAX = 5;
+
 const offerAttributes = [
   [`offer_id`, `id`],
   [`description_text`, `description`],
@@ -17,22 +21,86 @@ const commentAttributes = [
   [`comment_text`, `text`]
 ];
 
+const categoryAttributes = [
+  [`category_id`, `id`],
+  [`category_title`, `title`],
+  [`picture_name`, `picture`]
+];
+
+const getCategoryTitle = (categories) => {
+  return categories.map((it) => it.category_title);
+};
+
+const normalizeOfferData = (offer) => {
+  const {id, title, type, sum, picture, description, categories} = offer.dataValues;
+  return {
+    id,
+    title,
+    type,
+    sum,
+    description,
+    picture,
+    category: getCategoryTitle(categories),
+  };
+};
+
+const getPagesToView = (pagesAmount, currentPage) => {
+  const offset = currentPage > PAGES_AMOUNT_MAX ? currentPage - PAGES_AMOUNT_MAX : 0;
+  const firstIndex = START_PAGE + offset;
+  const lastIndex = pagesAmount < PAGES_AMOUNT_MAX ? pagesAmount : PAGES_AMOUNT_MAX + offset;
+  return {
+    firstIndex,
+    lastIndex,
+    previous: offset > 0,
+    next: pagesAmount > PAGES_AMOUNT_MAX && pagesAmount > lastIndex
+  };
+};
+
 module.exports.storage = {
   getCategories: async () => {
-    const categories = await Category.findAll({
-      attributes: [`category_title`]
+    const rawCategories = await Category.findAll({
+      attributes: categoryAttributes
     });
-    return categories.map((it) => it.category_title);
+    const categories = await Promise.all(Array(rawCategories.length)
+      .fill({})
+      .map((async (it, index) => {
+        const {id, title, picture} = rawCategories[index].dataValues;
+        const currentCategory = await Category.findByPk(id);
+        const offersAmount = await currentCategory.countOffers();
+        return {id, title, picture, offersAmount};
+      })));
+    return categories.filter((it) => it.offersAmount > 0);
   },
   getAllOffers: () => {
     return Offer.findAll({
-      attributes: offerAttributes
+      attributes: offerAttributes,
+      limit: OFFERS_PER_PAGE
     });
   },
   getOfferById: (offerId) => {
     return Offer.findByPk(offerId, {
       attributes: offerAttributes
     });
+  },
+  getOffersByCategoryId: async (categoryId, page) => {
+    const category = await Category.findByPk(categoryId, {
+      attributes: [`category_id`]
+    });
+    const offersAmount = await category.countOffers();
+    const pagesAmount = Math.ceil(offersAmount / OFFERS_PER_PAGE);
+    const currentPage = parseInt(page, 10) || START_PAGE;
+    const rawOffers = await category.getOffers({
+      attributes: offerAttributes,
+      include: [`categories`],
+      offset: currentPage * OFFERS_PER_PAGE - OFFERS_PER_PAGE,
+      limit: OFFERS_PER_PAGE
+    });
+    const offers = rawOffers.map((it) => normalizeOfferData(it));
+    const categoryData = await Category.findByPk(categoryId, {
+      attributes: categoryAttributes
+    });
+    const pagesToView = getPagesToView(pagesAmount, currentPage);
+    return {offers, offersAmount, pagesAmount, currentPage, categoryData, pagesToView};
   },
   getComments: async (offerId) => {
     const offer = await Offer.findByPk(offerId);
