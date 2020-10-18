@@ -120,10 +120,6 @@ module.exports.storage = {
       where: {[Op.and]: [{'offer_id': offerId}, {'comment_id': commentId}]}
     });
   },
-  isValid: (offer) => {
-    const properties = [`category`, `description`, `picture`, `title`, `type`, `sum`];
-    return properties.every((it) => offer.hasOwnProperty(it));
-  },
   updateOffer: async (offerId, newData) => {
     const {title, picture, description, type, category, sum} = newData;
     const updatedOffer = {
@@ -158,24 +154,18 @@ module.exports.storage = {
     });
     return newComment;
   },
-  isCommentValid: (comment) => {
-    return comment && comment.text !== `` ? true : false;
-  },
   addNewOffer: async (newData) => {
-
     if (!newData) {
       return undefined;
     }
-
-    const {title, picture, description, type, category, sum} = newData;
-
+    const {title, picture, createdDate, description, type, category, sum} = newData;
     const categories = await Category.findAll({
-      where: {'category_title': {[Op.in]: [category].flat()}}
+      where: {'category_title': {[Op.in]: category}}
     });
-
     const newOffer = await Offer.create({
       'offer_title': title,
       'picture_name': picture,
+      'created_date': createdDate,
       'description_text': description,
       'offer_type': type,
       'price': sum,

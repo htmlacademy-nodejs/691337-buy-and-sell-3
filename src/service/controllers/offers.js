@@ -65,12 +65,13 @@ module.exports.removeComment = async (req, res) => {
 };
 
 module.exports.updateOffer = async (req, res) => {
-  const isValid = storage.isValid(req.body);
-
+  //const isValid = storage.isValid(req.body);
+  /*
   if (!isValid) {
     logger.error(`End request with error ${HttpCode.BAD_REQUEST}`);
     return res.status(HttpCode.BAD_REQUEST).send(`Bad request. Not all data`);
   }
+  */
 
   const offer = await storage.updateOffer(req.params.offerId, req.body);
 
@@ -104,12 +105,14 @@ module.exports.createComment = async (req, res) => {
 };
 
 module.exports.createOffer = async (req, res) => {
-  const isValid = storage.isValid(req.body);
+  //const isValid = storage.isValid(req.body);
 
+  /*
   if (!isValid) {
     logger.error(`End request with error ${HttpCode.BAD_REQUEST}`);
     return res.status(HttpCode.BAD_REQUEST).send(`Bad request. Not all data`);
   }
+  */
 
   const offer = await storage.addNewOffer(req.body);
   logger.info(`End request with status code ${HttpCode.CREATED}`);

@@ -3,7 +3,7 @@
 const axios = require(`axios`);
 const {getLogger} = require(`../../logger`);
 const {getData, renderError} = require(`../../utils`);
-const {URL} = require(`../../constants`);
+const {URL, DefaultData} = require(`../../constants`);
 const logger = getLogger();
 
 module.exports.getOffer = async (req, res) => {
@@ -46,14 +46,22 @@ module.exports.getNewOfferForm = (req, res) => {
 
 module.exports.addOffer = async (req, res) => {
   const getPicture = () => {
-    return req.files.length > 0 ? req.files[0].originalname : ``;
+    return req.files.length > 0 ? req.files[0].originalname : DefaultData.picture;
+  };
+  const offerDate = new Date();
+  const normalizeCategory = (data) => {
+    if (data === undefined) {
+      return [];
+    }
+    return typeof data === `string` ? [data] : data;
   };
 
   const offer = {
     title: req.body[`ticket-name`],
     picture: getPicture(),
+    createdDate: offerDate.toISOString(),
     description: req.body.comment,
-    category: req.body.category,
+    category: normalizeCategory(req.body.category),
     type: req.body.action,
     sum: req.body.price,
   };
