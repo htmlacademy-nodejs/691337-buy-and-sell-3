@@ -11,6 +11,7 @@ const offerAttributes = [
   [`offer_id`, `id`],
   [`description_text`, `description`],
   [`picture_name`, `picture`],
+  [`created_date`, `createdDate`],
   [`offer_title`, `title`],
   [`offer_type`, `type`],
   [`price`, `sum`]
@@ -77,10 +78,14 @@ module.exports.storage = {
       limit: OFFERS_PER_PAGE
     });
   },
-  getOfferById: (offerId) => {
-    return Offer.findByPk(offerId, {
+  getOfferById: async (offerId) => {
+    const currentOffer = await Offer.findByPk(offerId);
+    const categories = await currentOffer.getCategories();
+    const currentCategories = getCategoryTitle(categories);
+    const offerData = await Offer.findByPk(offerId, {
       attributes: offerAttributes
     });
+    return {offerData, currentCategories};
   },
   getOffersByCategoryId: async (categoryId, page) => {
     const category = await Category.findByPk(categoryId, {
@@ -92,6 +97,7 @@ module.exports.storage = {
     const rawOffers = await category.getOffers({
       attributes: offerAttributes,
       include: [`categories`],
+      order: [[`created_date`, `DESC`]],
       offset: currentPage * OFFERS_PER_PAGE - OFFERS_PER_PAGE,
       limit: OFFERS_PER_PAGE
     });
@@ -121,10 +127,11 @@ module.exports.storage = {
     });
   },
   updateOffer: async (offerId, newData) => {
-    const {title, picture, description, type, category, sum} = newData;
+    const {title, picture, createdDate, description, type, category, sum} = newData;
     const updatedOffer = {
       'offer_title': title,
       'picture_name': picture,
+      'created_date': createdDate,
       'description_text': description,
       'offer_type': type,
       'price': sum,

@@ -30,8 +30,7 @@ block content
                   span Обязательное поле
               .ticket-form__row
                 select#category-field.form__select.js-multiple-select(name='category' data-label='Выбрать категорию публикации')
-                  - const categories = ['Дом', 'Спорт и отдых', 'Авто', 'Электроника']
-                  each item in categories
+                  each item in categoriesTitle
                     option(value=item)= item
               .ticket-form__row
                 .form__field.form__field--price

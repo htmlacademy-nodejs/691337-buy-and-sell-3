@@ -8,8 +8,14 @@ const logger = getLogger();
 
 module.exports.getOffer = async (req, res) => {
   try {
-    const offerById = await getData(`${URL}/offers/${req.params.id}`);
-    return res.render(`offers/ticket-edit`, {data: offerById});
+    const offer = await getData(`${URL}/offers/${req.params.id}`);
+    const categories = await getData(`${URL}/categories`);
+    const categoriesTitle = categories.map((it) => it.title);
+    return res.render(`offers/ticket-edit`, {
+      data: offer.offerData,
+      categories: offer.currentCategories,
+      categoriesTitle
+    });
   } catch (err) {
     return renderError(err.response.status, res);
   }
@@ -36,9 +42,14 @@ module.exports.getOffersByCategory = async (req, res) => {
   }
 };
 
-module.exports.getNewOfferForm = (req, res) => {
+module.exports.getNewOfferForm = async (req, res) => {
   try {
-    return res.render(`offers/new-ticket`, {data: {}});
+    const categories = await getData(`${URL}/categories`);
+    const categoriesTitle = categories.map((it) => it.title);
+    return res.render(`offers/new-ticket`, {
+      data: {},
+      categoriesTitle
+    });
   } catch (err) {
     return renderError(err.response.status, res);
   }
@@ -71,7 +82,11 @@ module.exports.addOffer = async (req, res) => {
     return res.redirect(`/my`);
   } catch (err) {
     logger.error(`Error: ${err}`);
-    return res.render(`offers/new-ticket`, {data: offer});
+    const categories = await getData(`${URL}/categories`);
+    const categoriesTitle = categories.map((it) => it.title);
+    return res.render(`offers/new-ticket`, {
+      data: offer,
+      categoriesTitle});
   }
 };
 
