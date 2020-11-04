@@ -80,6 +80,9 @@ module.exports.storage = {
   },
   getOfferById: async (offerId) => {
     const currentOffer = await Offer.findByPk(offerId);
+    if (currentOffer === null) {
+      return undefined;
+    }
     const categories = await currentOffer.getCategories();
     const currentCategories = getCategoryTitle(categories);
     const offerData = await Offer.findByPk(offerId, {
@@ -127,11 +130,10 @@ module.exports.storage = {
     });
   },
   updateOffer: async (offerId, newData) => {
-    const {title, picture, createdDate, description, type, category, sum} = newData;
+    const {title, picture, description, type, category, sum} = newData;
     const updatedOffer = {
       'offer_title': title,
       'picture_name': picture,
-      'created_date': createdDate,
       'description_text': description,
       'offer_type': type,
       'price': sum,
@@ -147,7 +149,7 @@ module.exports.storage = {
     });
     await currentOffer.update(updatedOffer, {});
     await currentOffer.addCategories(categories);
-    return currentOffer;
+    return currentOffer.offer_id;
   },
   addOfferComment: async (offerId, comment) => {
     const offer = await Offer.findByPk(offerId);
@@ -155,11 +157,15 @@ module.exports.storage = {
       return undefined;
     }
     const {text} = comment;
-    const newComment = Comment.create({
+    const newComment = await Comment.create({
       'comment_text': text,
       'offer_id': offerId,
     });
-    return newComment;
+    const newCommentId = newComment.comment_id;
+    const commentData = await Comment.findByPk(newCommentId, {
+      attributes: commentAttributes
+    });
+    return commentData;
   },
   addNewOffer: async (newData) => {
     if (!newData) {
@@ -177,8 +183,9 @@ module.exports.storage = {
       'offer_type': type,
       'price': sum,
     });
+
     await newOffer.addCategories(categories);
-    return newOffer;
+    return newOffer.offer_id;
   },
   getMatchedOffers: (searchString) => {
     return Offer.findAll({

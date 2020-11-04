@@ -6,7 +6,7 @@ const {getLogger} = require(`../../logger`);
 const logger = getLogger();
 
 const MESSAGE = `Not correct data type by`;
-const isInteger = (param) => Number.isInteger(parseInt(param, 10));
+const isInteger = (param) => Number.isInteger(Number(param));
 
 module.exports.checkOfferParams = (req, res, next) => {
   const {offerId} = req.params;

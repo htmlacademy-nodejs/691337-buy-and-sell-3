@@ -9,6 +9,9 @@ block content
       .ticket-form__wrapper
         h1.ticket-form__title Редактировать публикацию
         .ticket-form__tile
+          if errorsList
+            each item in errorsList
+              li(style={color: 'red', padding: '0px 0px 20px 20px'})= item
           form.ticket-form__form.form(action='#' method='post' enctype='multipart/form-data' autocomplete='off')
             .ticket-form__avatar-container.js-preview-container.uploaded
               .ticket-form__avatar.js-preview

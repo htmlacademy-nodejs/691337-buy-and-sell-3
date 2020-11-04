@@ -10,8 +10,7 @@ module.exports = Joi.object({
   picture: Joi.string()
     .required(),
   createdDate: Joi.string()
-    .isoDate()
-    .required(),
+    .isoDate(),
   description: Joi.string()
     .min(50)
     .max(1000)

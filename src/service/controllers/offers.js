@@ -65,7 +65,8 @@ module.exports.removeComment = async (req, res) => {
 };
 
 module.exports.updateOffer = async (req, res) => {
-  const offer = await storage.updateOffer(req.params.offerId, req.body);
+  const offerId = await storage.updateOffer(req.params.offerId, req.body);
+  const offer = await storage.getOfferById(offerId);
 
   if (!offer) {
     logger.error(`End request with error ${HttpCode.NOT_FOUND}`);
@@ -90,7 +91,8 @@ module.exports.createComment = async (req, res) => {
 
 module.exports.createOffer = async (req, res) => {
 
-  const offer = await storage.addNewOffer(req.body);
+  const offerId = await storage.addNewOffer(req.body);
+  const offer = await storage.getOfferById(offerId);
   logger.info(`End request with status code ${HttpCode.CREATED}`);
   return res.status(HttpCode.CREATED).json(offer);
 };

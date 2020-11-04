@@ -12,6 +12,7 @@ offersRouter.get(`/category/:id`, controller.getOffersByCategory);
 offersRouter.get(`/add`, controller.getNewOfferForm);
 offersRouter.post(`/add`, upload.any(), controller.addOffer);
 offersRouter.get(`/edit/:id`, controller.getOffer);
+offersRouter.post(`/edit/:id`, upload.any(), controller.updateOffer);
 offersRouter.get(`/:id`, (req, res) => res.render(`offers/ticket`));
 
 module.exports = offersRouter;
