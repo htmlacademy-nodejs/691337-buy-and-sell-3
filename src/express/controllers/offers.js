@@ -6,11 +6,14 @@ const {getData, renderError} = require(`../../utils`);
 const {URL, DefaultData} = require(`../../constants`);
 const logger = getLogger();
 
+const offerPicture = [];
+
 module.exports.getOffer = async (req, res) => {
   try {
     const offer = await getData(`${URL}/offers/${req.params.id}`);
     const categories = await getData(`${URL}/categories`);
     const categoriesTitle = categories.map((it) => it.title);
+    offerPicture.push(offer.offerData.picture);
     return res.render(`offers/ticket-edit`, {
       data: offer.offerData,
       categories: offer.currentCategories,
@@ -94,7 +97,7 @@ module.exports.addOffer = async (req, res) => {
 
 module.exports.updateOffer = async (req, res) => {
   const getPicture = () => {
-    return req.files.length > 0 ? req.files[0].originalname : DefaultData.picture;
+    return req.files.length > 0 ? req.files[0].originalname : offerPicture[0];
   };
   const normalizeCategory = (data) => {
     if (data === undefined) {
@@ -113,7 +116,7 @@ module.exports.updateOffer = async (req, res) => {
   };
 
   try {
-    await axios.post(`${URL}/offers`, offer);
+    await axios.put(`${URL}/offers/${req.params.id}`, offer);
     return res.redirect(`/my`);
   } catch (err) {
     logger.error(`Error: ${err}`);
