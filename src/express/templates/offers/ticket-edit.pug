@@ -9,11 +9,13 @@ block content
       .ticket-form__wrapper
         h1.ticket-form__title Редактировать публикацию
         .ticket-form__tile
+          if errorsList
+            each item in errorsList
+              li(style={color: 'red', padding: '0px 0px 20px 20px'})= item
           form.ticket-form__form.form(action='#' method='post' enctype='multipart/form-data' autocomplete='off')
             .ticket-form__avatar-container.js-preview-container.uploaded
               .ticket-form__avatar.js-preview
-                - const picture = data.picture.split('.')[0]
-                img(src='/img/' + picture + '.jpg' srcset='/img/' + picture + '@2x.jpg 2x' alt)
+                img(src='/img/' + data.picture srcset='/img/' + data.picture alt='Иконка категории')
               .ticket-form__field-avatar
                 input#avatar.visually-hidden.js-file-field(type='file' name='avatar')
                 label(for='avatar')
@@ -32,10 +34,9 @@ block content
                   span Обязательное поле
               .ticket-form__row
                 select#category-field.form__select.js-multiple-select(name='category' data-label='Выбрать категорию публикации' multiple)
-                  option(value='1' selected) Дом
-                  option(value='2') Спорт и отдых
-                  option(value='3') Авто
-                  option(value='4') Электроника
+                  each item in categoriesTitle
+                    - const isSelected = categories.includes(item)
+                    option(value= item selected=isSelected)= item
               .ticket-form__row
                 .form__field.form__field--price
                   input#price-field.js-field.js-price(type='number' name='price' min='1' value= data.sum required)

@@ -9,6 +9,9 @@ block content
       .ticket-form__wrapper
         h1.ticket-form__title Новая публикация
         .ticket-form__tile
+          if errorsList
+            each item in errorsList
+              li(style={color: 'red', padding: '0px 0px 20px 20px'})= item
           form.ticket-form__form.form(action='/offers/add' method='post' enctype='multipart/form-data' autocomplete='off')
             .ticket-form__avatar-container.js-preview-container
               .ticket-form__avatar.js-preview
@@ -30,8 +33,7 @@ block content
                   span Обязательное поле
               .ticket-form__row
                 select#category-field.form__select.js-multiple-select(name='category' data-label='Выбрать категорию публикации')
-                  - const categories = ['Дом', 'Спорт и отдых', 'Авто', 'Электроника']
-                  each item in categories
+                  each item in categoriesTitle
                     option(value=item)= item
               .ticket-form__row
                 .form__field.form__field--price

@@ -3,13 +3,22 @@
 const axios = require(`axios`);
 const {getLogger} = require(`../../logger`);
 const {getData, renderError} = require(`../../utils`);
-const {URL} = require(`../../constants`);
+const {URL, DefaultData} = require(`../../constants`);
 const logger = getLogger();
+
+const offerPicture = [];
 
 module.exports.getOffer = async (req, res) => {
   try {
-    const offerById = await getData(`${URL}/offers/${req.params.id}`);
-    return res.render(`offers/ticket-edit`, {data: offerById});
+    const offer = await getData(`${URL}/offers/${req.params.id}`);
+    const categories = await getData(`${URL}/categories`);
+    const categoriesTitle = categories.map((it) => it.title);
+    offerPicture.push(offer.offerData.picture);
+    return res.render(`offers/ticket-edit`, {
+      data: offer.offerData,
+      categories: offer.currentCategories,
+      categoriesTitle
+    });
   } catch (err) {
     return renderError(err.response.status, res);
   }
@@ -36,9 +45,14 @@ module.exports.getOffersByCategory = async (req, res) => {
   }
 };
 
-module.exports.getNewOfferForm = (req, res) => {
+module.exports.getNewOfferForm = async (req, res) => {
   try {
-    return res.render(`offers/new-ticket`, {data: {}});
+    const categories = await getData(`${URL}/categories`);
+    const categoriesTitle = categories.map((it) => it.title);
+    return res.render(`offers/new-ticket`, {
+      data: {},
+      categoriesTitle
+    });
   } catch (err) {
     return renderError(err.response.status, res);
   }
@@ -46,14 +60,22 @@ module.exports.getNewOfferForm = (req, res) => {
 
 module.exports.addOffer = async (req, res) => {
   const getPicture = () => {
-    return req.files.length > 0 ? req.files[0].originalname : ``;
+    return req.files.length > 0 ? req.files[0].originalname : DefaultData.picture;
+  };
+  const offerDate = new Date();
+  const normalizeCategory = (data) => {
+    if (data === undefined) {
+      return [];
+    }
+    return typeof data === `string` ? [data] : data;
   };
 
   const offer = {
     title: req.body[`ticket-name`],
     picture: getPicture(),
+    createdDate: offerDate.toISOString(),
     description: req.body.comment,
-    category: req.body.category,
+    category: normalizeCategory(req.body.category),
     type: req.body.action,
     sum: req.body.price,
   };
@@ -63,8 +85,48 @@ module.exports.addOffer = async (req, res) => {
     return res.redirect(`/my`);
   } catch (err) {
     logger.error(`Error: ${err}`);
-    return res.render(`offers/new-ticket`, {data: offer});
+    const errorsList = err.response.data.notValid;
+    const categories = await getData(`${URL}/categories`);
+    const categoriesTitle = categories.map((it) => it.title);
+    return res.render(`offers/new-ticket`, {
+      errorsList,
+      data: offer,
+      categoriesTitle});
   }
 };
 
+module.exports.updateOffer = async (req, res) => {
+  const getPicture = () => {
+    return req.files.length > 0 ? req.files[0].originalname : offerPicture[0];
+  };
+  const normalizeCategory = (data) => {
+    if (data === undefined) {
+      return [];
+    }
+    return typeof data === `string` ? [data] : data;
+  };
 
+  const offer = {
+    title: req.body[`ticket-name`],
+    picture: getPicture(),
+    description: req.body.comment,
+    category: normalizeCategory(req.body.category),
+    type: req.body.action,
+    sum: req.body.price,
+  };
+
+  try {
+    await axios.put(`${URL}/offers/${req.params.id}`, offer);
+    return res.redirect(`/my`);
+  } catch (err) {
+    logger.error(`Error: ${err}`);
+    const errorsList = err.response.data.notValid;
+    const categories = await getData(`${URL}/categories`);
+    const categoriesTitle = categories.map((it) => it.title);
+    return res.render(`offers/ticket-edit`, {
+      errorsList,
+      data: offer,
+      categories: offer.category,
+      categoriesTitle});
+  }
+};
