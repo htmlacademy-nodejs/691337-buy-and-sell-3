@@ -71,15 +71,14 @@ const generateOffersData = (amount, titles, sentences, users) => Array(amount).f
 }));
 
 const generateUsersData = (users) => users.map((it) => {
-  const [firstName, lastName, email] = it.split(`, `);
+  const [userName, email] = it.split(`, `);
   const pass = nanoid(6);
   const avatar = getImgFileName(getRandomInt(PictureRange.min, PictureRange.max));
   return {
-    'first_name': firstName,
-    'last_name': lastName,
-    'email': email,
-    'pass': pass,
-    'avatar_name': avatar,
+    'user_name': userName,
+    email,
+    pass,
+    avatar,
   };
 });
 
