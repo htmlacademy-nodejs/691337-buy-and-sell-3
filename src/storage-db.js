@@ -188,18 +188,13 @@ module.exports.storage = {
     await newOffer.addCategories(categories);
     return newOffer.offer_id;
   },
-  addNewUser: async (newData) => {
-
-    if (!newData) {
-      return undefined;
-    }
-    const {userName, email, pass, avatar} = newData;
+  checkEmail: async (newData) => {
+    const {email} = newData;
     const user = await User.findOne({where: {email}});
-
-    if (user !== null) {
-      const newUser = ``;
-      return newUser;
-    }
+    return user !== null;
+  },
+  addNewUser: async (newData) => {
+    const {userName, email, pass, avatar} = newData;
     const password = await getPassHashSum(pass);
     const newUser = await User.create({
       'user_name': userName,
