@@ -11,7 +11,7 @@ module.exports.checkUserExists = async (req, res, next) => {
 
   if (existsUser) {
     logger.info(`End request with status code ${res.statusCode}`);
-    return res.status(HttpCode.OK).json(`Пользователь с такой учетной записью уже существует`);
+    return res.status(HttpCode.OK).json(`Пользователь с таким email уже зарегистрирован`);
   }
 
   return next();
