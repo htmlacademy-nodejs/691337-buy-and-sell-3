@@ -52,8 +52,10 @@ module.exports.addNewUser = async (req, res) => {
     return res.redirect(`/login`);
   } catch (err) {
     logger.error(`Error: ${err}`);
+    const errorsList = err.response.data.notValid;
     return res.render(`auth/sign-up`, {
-      data: {user}
+      errorsList,
+      data: user
     });
   }
 };

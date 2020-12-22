@@ -199,7 +199,7 @@ module.exports.storage = {
     const newUser = await User.create({
       'user_name': userName,
       email,
-      'pass': password,
+      password,
       avatar
     });
     return newUser;

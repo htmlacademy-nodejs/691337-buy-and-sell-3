@@ -72,12 +72,12 @@ const generateOffersData = (amount, titles, sentences, users) => Array(amount).f
 
 const generateUsersData = (users) => users.map((it) => {
   const [userName, email] = it.split(`, `);
-  const pass = nanoid(6);
+  const password = nanoid(6);
   const avatar = getImgFileName(getRandomInt(PictureRange.min, PictureRange.max));
   return {
     'user_name': userName,
     email,
-    pass,
+    password,
     avatar,
   };
 });
