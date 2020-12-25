@@ -1,7 +1,8 @@
 'use strict';
 
 const {Op} = require(`sequelize`);
-const {Offer, Comment, Category} = require(`../service/db`);
+const {Offer, Comment, Category, User} = require(`../service/db`);
+const {getPassHashSum} = require(`./utils`);
 
 const START_PAGE = 1;
 const OFFERS_PER_PAGE = 8;
@@ -186,6 +187,22 @@ module.exports.storage = {
 
     await newOffer.addCategories(categories);
     return newOffer.offer_id;
+  },
+  checkEmail: async (newData) => {
+    const {email} = newData;
+    const user = await User.findOne({where: {email}});
+    return user !== null;
+  },
+  addNewUser: async (newData) => {
+    const {userName, email, pass, avatar} = newData;
+    const password = await getPassHashSum(pass);
+    const newUser = await User.create({
+      'user_name': userName,
+      email,
+      password,
+      avatar
+    });
+    return newUser;
   },
   getMatchedOffers: (searchString) => {
     return Offer.findAll({

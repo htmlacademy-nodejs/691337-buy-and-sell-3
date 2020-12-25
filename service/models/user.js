@@ -9,11 +9,7 @@ module.exports = (sequelize, DataTypes, Model) => {
       primaryKey: true,
       allowNull: false,
     },
-    'first_name': {
-      type: DataTypes.TEXT,
-      allowNull: false,
-    },
-    'last_name': {
+    'user_name': {
       type: DataTypes.TEXT,
       allowNull: false,
     },
@@ -22,14 +18,18 @@ module.exports = (sequelize, DataTypes, Model) => {
       allowNull: false,
       unique: true,
     },
-    'pass': {
+    'password': {
       type: DataTypes.TEXT,
       allowNull: false,
     },
-    'avatar_name': {
+    'avatar': {
       type: DataTypes.TEXT,
       allowNull: false,
     },
+    'refresh': {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    }
   }, {
     sequelize,
     timestamps: true,

@@ -20,3 +20,13 @@ module.exports.HttpCode = {
   UNAUTHORIZED: 401,
   BAD_REQUEST: 400,
 };
+
+module.exports.RegisterMessage = {
+  USER_ALREADY_REGISTER: `Пользователь с таким email уже зарегистрирован`,
+  REQUIRED_FIELD: `Поле обязательно для заполнения`,
+  WRONG_EMAIL: `Некорректный email`,
+  WRONG_USERNAME: `Имя не должно содержать цифр и специальных символов`,
+  MIN_PASSWORD_LENGTH: `Пароль должен быть не меньше 6 символов`,
+  PASSWORDS_NOT_EQUAL: `Пароли не совпадают`,
+  AVATAR_EMPTY_VALUE: `Отсутствует аватар`
+};
