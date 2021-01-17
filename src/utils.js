@@ -2,11 +2,34 @@
 
 const axios = require(`axios`);
 const bcrypt = require(`bcrypt`);
+const path = require(`path`);
+const multer = require(`multer`);
+const nanoid = require(`nanoid`);
 const {HttpCode} = require(`./constants`);
 const {getLogger} = require(`./logger`);
 const logger = getLogger();
 
 const saltRounds = 10;
+
+const UPLOAD_DIR = `./express/upload/img`;
+const uploadDirAbsolute = path.resolve(__dirname, UPLOAD_DIR);
+const FileType = [`image/png`, `image/jpg`, `image/jpeg`];
+
+const storage = multer.diskStorage({
+  destination: uploadDirAbsolute,
+  filename: (req, file, cb) => {
+    const uniqueName = nanoid(10);
+    const extension = file.originalname.split(`.`).pop();
+    cb(null, `${uniqueName}.${extension}`);
+  }
+});
+const fileFilter = (req, file, cb) => {
+  if (FileType.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
 
 module.exports.getRandomInt = (min, max) => {
   min = Math.ceil(min);
@@ -23,9 +46,9 @@ module.exports.shuffle = (someArray) => {
   return someArray;
 };
 
-module.exports.getData = async (path) => {
+module.exports.getData = async (dataPath) => {
   try {
-    const content = await axios.get(path);
+    const content = await axios.get(dataPath);
     return content.data;
   } catch (err) {
     logger.error(`Error: ${err.message}`);
@@ -46,3 +69,8 @@ module.exports.getPassHashSum = async (pass) => {
   const hash = await bcrypt.hash(pass, saltRounds);
   return hash;
 };
+
+module.exports.upload = multer({
+  storage,
+  fileFilter
+});

@@ -59,9 +59,7 @@ module.exports.getNewOfferForm = async (req, res) => {
 };
 
 module.exports.addOffer = async (req, res) => {
-  const getPicture = () => {
-    return req.files.length > 0 ? req.files[0].originalname : DefaultData.picture;
-  };
+
   const offerDate = new Date();
   const normalizeCategory = (data) => {
     if (data === undefined) {
@@ -72,7 +70,7 @@ module.exports.addOffer = async (req, res) => {
 
   const offer = {
     title: req.body[`ticket-name`],
-    picture: getPicture(),
+    picture: req.file ? req.file.filename : DefaultData.picture,
     createdDate: offerDate.toISOString(),
     description: req.body.comment,
     category: normalizeCategory(req.body.category),
@@ -96,9 +94,7 @@ module.exports.addOffer = async (req, res) => {
 };
 
 module.exports.updateOffer = async (req, res) => {
-  const getPicture = () => {
-    return req.files.length > 0 ? req.files[0].originalname : offerPicture[0];
-  };
+
   const normalizeCategory = (data) => {
     if (data === undefined) {
       return [];
@@ -108,7 +104,7 @@ module.exports.updateOffer = async (req, res) => {
 
   const offer = {
     title: req.body[`ticket-name`],
-    picture: getPicture(),
+    picture: req.file ? req.file.filename : DefaultData.picture,
     description: req.body.comment,
     category: normalizeCategory(req.body.category),
     type: req.body.action,

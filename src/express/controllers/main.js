@@ -35,16 +35,13 @@ module.exports.getRegisterForm = (req, res) => {
 };
 
 module.exports.addNewUser = async (req, res) => {
-  const getPicture = () => {
-    return req.files.length > 0 ? req.files[0].originalname : DefaultData.picture;
-  };
 
   const user = {
     userName: req.body[`user-name`],
     email: req.body[`user-email`],
     pass: req.body[`user-password`],
     repeatPass: req.body[`user-password-again`],
-    avatar: getPicture()
+    avatar: req.file ? req.file.filename : DefaultData.picture
   };
 
   try {
