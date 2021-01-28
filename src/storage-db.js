@@ -1,7 +1,7 @@
 'use strict';
 
 const {Op} = require(`sequelize`);
-const {Offer, Comment, Category, User} = require(`../service/db`);
+const {Offer, Comment, Category, User, Token} = require(`../service/db`);
 const {getPassHashSum} = require(`./utils`);
 
 const START_PAGE = 1;
@@ -188,10 +188,10 @@ module.exports.storage = {
     await newOffer.addCategories(categories);
     return newOffer.offer_id;
   },
-  checkEmail: async (newData) => {
-    const {email} = newData;
+  checkEmail: async (userData) => {
+    const {email} = userData;
     const user = await User.findOne({where: {email}});
-    return user !== null;
+    return user;
   },
   addNewUser: async (newData) => {
     const {userName, email, pass, avatar} = newData;
@@ -210,4 +210,17 @@ module.exports.storage = {
       where: {'offer_title': {[Op.substring]: searchString}}
     });
   },
+  addRefreshToken: async (refresh) => {
+    const newToken = await Token.create({
+      refresh
+    });
+    return newToken;
+  },
+  findRefreshToken: async (refresh) => {
+    const refreshToken = await Token.findOne({where: {refresh}});
+    return refreshToken;
+  },
+  deleteRefreshToken: async (token) => {
+    return Token.destroy({where: {refresh: token.refresh}});
+  }
 };

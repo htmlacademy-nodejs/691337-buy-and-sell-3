@@ -6,6 +6,7 @@ const getUser = require(`./models/user`);
 const getOffer = require(`./models/offer`);
 const getComment = require(`./models/comment`);
 const getCategory = require(`./models/category`);
+const getToken = require(`./models/token`);
 const {getLogger} = require(`../src/logger`);
 
 const logger = getLogger();
@@ -23,6 +24,7 @@ const User = getUser(sequelize, DataTypes, Model);
 const Offer = getOffer(sequelize, DataTypes, Model);
 const Comment = getComment(sequelize, DataTypes, Model);
 const Category = getCategory(sequelize, DataTypes, Model);
+const Token = getToken(sequelize, DataTypes, Model);
 
 User.hasMany(Offer, {
   as: `offers`,
@@ -114,6 +116,7 @@ module.exports = {
   Offer,
   Comment,
   Category,
+  Token,
   connectDb,
   initDb,
   sequelize

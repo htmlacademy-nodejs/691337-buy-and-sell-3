@@ -30,3 +30,9 @@ module.exports.RegisterMessage = {
   PASSWORDS_NOT_EQUAL: `Пароли не совпадают`,
   AVATAR_EMPTY_VALUE: `Отсутствует аватар`
 };
+
+module.exports.LoginMessage = {
+  USER_NOT_EXISTS: `Пользователь с таким email не зарегистрирован`,
+  WRONG_PASSWORD: `Неверный логин или пароль`
+};
+
