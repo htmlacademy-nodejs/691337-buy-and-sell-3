@@ -34,6 +34,16 @@ module.exports.getRegisterForm = (req, res) => {
   }
 };
 
+module.exports.getLoginForm = (req, res) => {
+  try {
+    return res.render(`auth/login`, {
+      data: {}
+    });
+  } catch (err) {
+    return renderError(err.response.status, res);
+  }
+};
+
 module.exports.addNewUser = async (req, res) => {
 
   const user = {
@@ -54,5 +64,20 @@ module.exports.addNewUser = async (req, res) => {
       errorsList,
       data: user
     });
+  }
+};
+
+module.exports.authenticateUser = async (req, res) => {
+
+  const user = {
+    email: req.body[`user-email`],
+    pass: req.body[`user-password`],
+  };
+
+  try {
+    await axios.post(`${URL}/user/login`, user);
+    console.log(res.body);
+  } catch (err) {
+    logger.error(`Error: ${err}`);
   }
 };
