@@ -1,7 +1,7 @@
 'use strict';
 
 const {Op} = require(`sequelize`);
-const {Offer, Comment, Category, User, Token} = require(`../service/db`);
+const {Offer, Comment, Category, User, Token} = require(`./data-service/db`);
 const {getPassHashSum} = require(`./utils`);
 
 const START_PAGE = 1;

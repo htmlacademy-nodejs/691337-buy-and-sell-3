@@ -96,8 +96,3 @@ module.exports.createOffer = async (req, res) => {
   logger.info(`End request with status code ${HttpCode.CREATED}`);
   return res.status(HttpCode.CREATED).json(offer);
 };
-
-module.exports.auth = (req, res, next) => {
-  console.log(req.headers);
-  next();
-};

@@ -2,7 +2,7 @@
 
 const {getLogger} = require(`../../logger`);
 const app = require(`./app`);
-const {connectDb} = require(`../../../service/db`);
+const {connectDb} = require(`../../data-service/db`);
 
 const DEFAULT_PORT = 3000;
 const logger = getLogger();

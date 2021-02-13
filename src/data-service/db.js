@@ -7,7 +7,7 @@ const getOffer = require(`./models/offer`);
 const getComment = require(`./models/comment`);
 const getCategory = require(`./models/category`);
 const getToken = require(`./models/token`);
-const {getLogger} = require(`../src/logger`);
+const {getLogger} = require(`../logger`);
 
 const logger = getLogger();
 

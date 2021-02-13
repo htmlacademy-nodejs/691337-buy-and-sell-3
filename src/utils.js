@@ -50,9 +50,13 @@ module.exports.shuffle = (someArray) => {
   return someArray;
 };
 
-module.exports.getData = async (dataPath) => {
+module.exports.getData = async (dataPath, cookies = ``) => {
   try {
-    const content = await axios.get(dataPath);
+    const content = await axios.get(dataPath, {
+      headers: {
+        Cookie: cookies
+      }
+    });
     return content.data;
   } catch (err) {
     logger.error(`Error: ${err.message}`);

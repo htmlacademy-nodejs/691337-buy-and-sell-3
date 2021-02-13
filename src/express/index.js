@@ -2,6 +2,7 @@
 
 const express = require(`express`);
 const path = require(`path`);
+const cookieParser = require(`cookie-parser`);
 const {getLogger} = require(`../logger`);
 const mainRoutes = require(`./routes/main`);
 const offersRoutes = require(`./routes/offers`);
@@ -13,6 +14,8 @@ const UPLOAD_DIR = `upload`;
 
 const app = express();
 const logger = getLogger();
+
+app.use(cookieParser());
 
 app.use(`/`, mainRoutes);
 app.use(`/offers`, offersRoutes);

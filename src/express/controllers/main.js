@@ -75,9 +75,12 @@ module.exports.authenticateUser = async (req, res) => {
   };
 
   try {
-    await axios.post(`${URL}/user/login`, user);
-    console.log(res.body);
+    const response = await axios.post(`${URL}/user/login`, user);
+    await res.setHeader(`Set-Cookie`, [`accessToken=${response.data.accessToken}`, `refreshToken=${response.data.refreshToken}`]);
+    return res.redirect(`/`);
   } catch (err) {
     logger.error(`Error: ${err}`);
+    return res.redirect(`/login`);
   }
 };
+

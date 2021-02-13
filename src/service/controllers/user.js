@@ -2,12 +2,10 @@
 
 const jwt = require(`jsonwebtoken`);
 const {storage} = require(`../../storage-db`);
+const {JWT_REFRESH_SECRET} = require(`../../data-service/config`);
 const {HttpCode, RegisterMessage, LoginMessage} = require(`../../constants`);
 const {getLogger} = require(`../../logger`);
 const {comparePassHashSum, makeTokens} = require(`../../utils`);
-
-//const JWT_ACCESS_SECRET = `secret`;
-const JWT_REFRESH_SECRET = `secret-refresh`;
 
 const logger = getLogger();
 
@@ -60,8 +58,8 @@ module.exports.makeTokens = async (req, res) => {
   return res.json({accessToken, refreshToken});
 };
 
-module.exports.refreshTokens = async (req, res) => {
-  const {token} = req.body;
+module.exports.refreshToken = async (req, res) => {
+  const token = req.body.refreshToken;
 
   if (!token) {
     logger.error(`End request with error ${HttpCode.BAD_REQUEST}`);
@@ -75,7 +73,7 @@ module.exports.refreshTokens = async (req, res) => {
     return res.status(HttpCode.NOT_FOUND);
   }
 
-  jwt.verify(token, JWT_REFRESH_SECRET, async (err, userData) => {
+  return jwt.verify(token, JWT_REFRESH_SECRET, async (err, userData) => {
 
     if (err) {
       logger.error(`End request with error ${HttpCode.FORBIDDEN}`);
@@ -84,10 +82,8 @@ module.exports.refreshTokens = async (req, res) => {
 
     const {id} = userData;
     const {accessToken, refreshToken} = makeTokens({id});
-
     await storage.deleteRefreshToken(currentToken);
     await storage.addRefreshToken(refreshToken);
-
     return res.json({accessToken, refreshToken});
   });
 };

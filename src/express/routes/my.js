@@ -5,7 +5,7 @@ const controller = require(`../controllers/my`);
 
 const myRouter = new express.Router();
 
-myRouter.get(`/`, controller.getOffers);
-myRouter.get(`/comments`, controller.getComments);
+myRouter.get(`/`, controller.auth, controller.getOffers);
+myRouter.get(`/comments`, controller.auth, controller.getComments);
 
 module.exports = myRouter;
