@@ -1,12 +1,7 @@
 'use strict';
 const axios = require(`axios`);
-const jwt = require(`jsonwebtoken`);
-const {JWT_ACCESS_SECRET} = require(`../../data-service/config`);
-const {getLogger} = require(`../../logger`);
 const {getData, renderError} = require(`../../utils`);
-const {URL, HttpCode} = require(`../../constants`);
-
-const logger = getLogger();
+const {URL} = require(`../../constants`);
 
 const OFFER_AMOUNT = 3;
 
@@ -32,30 +27,3 @@ module.exports.getComments = async (req, res) => {
     return renderError(err.response.status, res);
   }
 };
-
-module.exports.auth = async (req, res, next) => {
-
-  const {accessToken, refreshToken} = req.cookies;
-  console.log(`This is accessToken: ${accessToken}`);
-
-  if (!accessToken) {
-    logger.error(`End request with error ${HttpCode.UNAUTHORIZED}`);
-    return res.status(HttpCode.UNAUTHORIZED).end();
-  }
-
-  try {
-    jwt.verify(accessToken, JWT_ACCESS_SECRET);
-  } catch (err) {
-    try {
-      const response = await axios.post(`${URL}/user/refresh`, {refreshToken});
-      console.log(response.data);
-      await res.setHeader(`Set-Cookie`, [`accessToken=${response.data.accessToken}`, `refreshToken=${response.data.refreshToken}`]);
-      return next();
-    } catch (error) {
-      logger.error(`End request with error ${HttpCode.FORBIDDEN}`);
-      return res.status(HttpCode.FORBIDDEN).end();
-    }
-  }
-  return next();
-};
-

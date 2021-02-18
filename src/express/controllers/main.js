@@ -76,7 +76,10 @@ module.exports.authenticateUser = async (req, res) => {
 
   try {
     const response = await axios.post(`${URL}/user/login`, user);
-    await res.setHeader(`Set-Cookie`, [`accessToken=${response.data.accessToken}`, `refreshToken=${response.data.refreshToken}`]);
+    console.log(response.data);
+    await res.cookie(`accessToken`, `${response.data.accessToken}`);
+    await res.cookie(`refreshToken`, `${response.data.refreshToken}`);
+    //await res.setHeader(`Set-Cookie`, [`accessToken=${response.data.accessToken}`, `refreshToken=${response.data.refreshToken}`]);
     return res.redirect(`/`);
   } catch (err) {
     logger.error(`Error: ${err}`);
@@ -84,3 +87,14 @@ module.exports.authenticateUser = async (req, res) => {
   }
 };
 
+module.exports.logout = async (req, res) => {
+  const {refreshToken} = req.cookies;
+
+  try {
+    await axios.post(`${URL}/user/logout`, {refreshToken});
+    await res.clearCookie();
+    return res.redirect(`/`);
+  } catch (err) {
+    return renderError(err.response.status, res);
+  }
+};

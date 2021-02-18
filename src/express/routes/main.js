@@ -10,6 +10,7 @@ mainRouter.get(`/login`, controller.getLoginForm);
 mainRouter.get(`/register`, controller.getRegisterForm);
 mainRouter.post(`/register`, upload.single(`avatar`), controller.addNewUser);
 mainRouter.post(`/login`, upload.any(), controller.authenticateUser);
+mainRouter.get(`/logout`, controller.logout);
 mainRouter.get(`/search`, controller.getMatchedOffers);
 
 module.exports = mainRouter;

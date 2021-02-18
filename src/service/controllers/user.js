@@ -63,21 +63,21 @@ module.exports.refreshToken = async (req, res) => {
 
   if (!token) {
     logger.error(`End request with error ${HttpCode.BAD_REQUEST}`);
-    return res.status(HttpCode.BAD_REQUEST);
+    return res.status(HttpCode.BAD_REQUEST).end();
   }
 
   const currentToken = await storage.findRefreshToken(token);
 
   if (!currentToken) {
     logger.error(`End request with error ${HttpCode.NOT_FOUND}`);
-    return res.status(HttpCode.NOT_FOUND);
+    return res.status(HttpCode.NOT_FOUND).end();
   }
 
   return jwt.verify(token, JWT_REFRESH_SECRET, async (err, userData) => {
 
     if (err) {
       logger.error(`End request with error ${HttpCode.FORBIDDEN}`);
-      return res.status(HttpCode.FORBIDDEN);
+      return res.status(HttpCode.FORBIDDEN).end();
     }
 
     const {id} = userData;
@@ -88,3 +88,23 @@ module.exports.refreshToken = async (req, res) => {
   });
 };
 
+module.exports.logout = async (req, res) => {
+  const token = req.body.refreshToken;
+
+  if (!token) {
+    logger.error(`End request with error ${HttpCode.BAD_REQUEST}`);
+    return res.status(HttpCode.BAD_REQUEST).end();
+  }
+
+  const currentToken = await storage.findRefreshToken(token);
+
+  if (!currentToken) {
+    logger.error(`End request with error ${HttpCode.NOT_FOUND}`);
+    return res.status(HttpCode.NOT_FOUND).end();
+  }
+
+  await storage.deleteRefreshToken(currentToken);
+
+  logger.info(`End request with status code ${HttpCode.NO_CONTENT}`);
+  return res.status(HttpCode.NO_CONTENT).end();
+};
