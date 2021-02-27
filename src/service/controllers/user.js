@@ -14,7 +14,6 @@ module.exports.checkUserExists = async (req, res, next) => {
 
   if (existsUser) {
     logger.error(`End request with error ${HttpCode.BAD_REQUEST}`);
-    //return res.status(HttpCode.OK).json(RegisterMessage.USER_ALREADY_REGISTER);
     return res.status(HttpCode.BAD_REQUEST).json([RegisterMessage.USER_ALREADY_REGISTER]);
   }
   return next();
@@ -25,14 +24,14 @@ module.exports.authenticateUser = async (req, res, next) => {
 
   if (!existsUser) {
     logger.error(`End request with error ${HttpCode.FORBIDDEN}`);
-    return res.status(HttpCode.FORBIDDEN).json(LoginMessage.USER_NOT_EXISTS);
+    return res.status(HttpCode.FORBIDDEN).json([LoginMessage.USER_NOT_EXISTS]);
   }
 
   const isPasswordCorrect = await comparePassHashSum(existsUser, req.body.pass);
 
   if (!isPasswordCorrect) {
     logger.error(`End request with error ${HttpCode.FORBIDDEN}`);
-    return res.status(HttpCode.FORBIDDEN).json(LoginMessage.WRONG_PASSWORD);
+    return res.status(HttpCode.FORBIDDEN).json([LoginMessage.WRONG_PASSWORD]);
   }
   res.locals.user = existsUser;
   return next();

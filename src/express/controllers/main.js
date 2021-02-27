@@ -59,7 +59,7 @@ module.exports.addNewUser = async (req, res) => {
     return res.redirect(`/login`);
   } catch (err) {
     logger.error(`Error: ${err}`);
-    const errorsList = err.response.data.notValid;
+    const errorsList = err.response.data;
     return res.render(`auth/sign-up`, {
       errorsList,
       data: user
@@ -68,7 +68,6 @@ module.exports.addNewUser = async (req, res) => {
 };
 
 module.exports.authenticateUser = async (req, res) => {
-
   const user = {
     email: req.body[`user-email`],
     pass: req.body[`user-password`],
@@ -76,14 +75,16 @@ module.exports.authenticateUser = async (req, res) => {
 
   try {
     const response = await axios.post(`${URL}/user/login`, user);
-    console.log(response.data);
     await res.cookie(`accessToken`, `${response.data.accessToken}`);
     await res.cookie(`refreshToken`, `${response.data.refreshToken}`);
-    //await res.setHeader(`Set-Cookie`, [`accessToken=${response.data.accessToken}`, `refreshToken=${response.data.refreshToken}`]);
     return res.redirect(`/`);
   } catch (err) {
     logger.error(`Error: ${err}`);
-    return res.redirect(`/login`);
+    const errorsList = err.response.data;
+    return res.render(`auth/login`, {
+      errorsList,
+      data: user
+    });
   }
 };
 
@@ -93,7 +94,7 @@ module.exports.logout = async (req, res) => {
   try {
     await axios.post(`${URL}/user/logout`, {refreshToken});
     await res.clearCookie();
-    return res.redirect(`/`);
+    return res.redirect(`/login`);
   } catch (err) {
     return renderError(err.response.status, res);
   }

@@ -2,7 +2,7 @@
 process.argv.push(`--server`);
 const request = require(`supertest`);
 const app = require(`../cli/app`);
-const {HttpCode} = require(`../../constants`);
+const {HttpCode, OfferMessage} = require(`../../constants`);
 
 const WRONG_ID = `dZuF7ilQ61Dl`;
 
@@ -20,7 +20,7 @@ const newOffer = {
     picture: `item05.jpg`,
     category: [],
     title: `Куплю`,
-    type: ``,
+    type: `buy`,
     sum: `27`
   }
 };
@@ -35,12 +35,10 @@ const newComment = {
 };
 
 const errorsList = [
-  `"title" length must be at least 10 characters long`,
-  `"description" length must be at least 50 characters long`,
-  `"type" must be one of [buy, sell]`,
-  `"type" is not allowed to be empty`,
-  `"category" does not contain 1 required value(s)`,
-  `"sum" must be greater than or equal to 100`
+  OfferMessage.MIN_TITLE_LENGTH,
+  OfferMessage.MIN_DESCR_LENGTH,
+  OfferMessage.CATEGORY_REQUIRED,
+  OfferMessage.MIN_PRICE
 ];
 
 describe(`GET routes api/offers`, () => {
@@ -86,7 +84,7 @@ describe(`PUT routes api/offers`, () => {
     const resOffer = await request(app).put(`/api/offers/${offer.id}`)
     .send(newOffer.notValid);
     expect(resOffer.statusCode).toBe(HttpCode.BAD_REQUEST);
-    expect(resOffer.body.notValid).toEqual(errorsList);
+    expect(resOffer.body).toEqual(errorsList);
   });
 });
 
@@ -113,7 +111,7 @@ describe(`POST routes api/offers`, () => {
     const resOffer = await request(app).post(`/api/offers`)
     .send(newOffer.notValid);
     expect(resOffer.statusCode).toBe(HttpCode.BAD_REQUEST);
-    expect(resOffer.body.notValid).toEqual(errorsList);
+    expect(resOffer.body).toEqual(errorsList);
   });
   test(`When not valid comment data sent`, async () => {
     const res = await request(app).get(`/api/offers`);

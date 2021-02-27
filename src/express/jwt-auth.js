@@ -24,14 +24,15 @@ module.exports.auth = async (req, res, next) => {
     try {
       const response = await axios.post(`${URL}/user/refresh`, {refreshToken});
       console.log(response.data);
-      await res.clearCookie();
+      await res.clearCookie(`accessToken`);
+      await res.clearCookie(`refreshToken`);
       await res.cookie(`accessToken`, `${response.data.accessToken}`);
       await res.cookie(`refreshToken`, `${response.data.refreshToken}`);
       return next();
     } catch (error) {
       logger.error(`End request with error ${HttpCode.FORBIDDEN}`);
       //return res.status(HttpCode.FORBIDDEN).end();
-      return res.redirect(`../`);
+      return res.redirect(`../login`);
     }
   }
 

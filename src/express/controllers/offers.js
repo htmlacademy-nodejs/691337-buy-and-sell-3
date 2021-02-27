@@ -17,7 +17,8 @@ module.exports.getOffer = async (req, res) => {
     return res.render(`offers/ticket-edit`, {
       data: offer.offerData,
       categories: offer.currentCategories,
-      categoriesTitle
+      categoriesTitle,
+      csrf: req.csrfToken(),
     });
   } catch (err) {
     return renderError(err.response.status, res);
@@ -51,7 +52,8 @@ module.exports.getNewOfferForm = async (req, res) => {
     const categoriesTitle = categories.map((it) => it.title);
     return res.render(`offers/new-ticket`, {
       data: {},
-      categoriesTitle
+      categoriesTitle,
+      csrf: req.csrfToken(),
     });
   } catch (err) {
     return renderError(err.response.status, res);
