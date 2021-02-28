@@ -10,8 +10,6 @@ const logger = getLogger();
 module.exports.auth = async (req, res, next) => {
 
   const {accessToken, refreshToken} = req.cookies;
-  console.log(`This is accessToken: ${accessToken}`);
-
 
   if (!accessToken) {
     logger.error(`End request with error ${HttpCode.UNAUTHORIZED}`);
@@ -23,7 +21,6 @@ module.exports.auth = async (req, res, next) => {
   } catch (err) {
     try {
       const response = await axios.post(`${URL}/user/refresh`, {refreshToken});
-      console.log(response.data);
       await res.clearCookie(`accessToken`);
       await res.clearCookie(`refreshToken`);
       await res.cookie(`accessToken`, `${response.data.accessToken}`);
@@ -31,7 +28,6 @@ module.exports.auth = async (req, res, next) => {
       return next();
     } catch (error) {
       logger.error(`End request with error ${HttpCode.FORBIDDEN}`);
-      //return res.status(HttpCode.FORBIDDEN).end();
       return res.redirect(`../login`);
     }
   }

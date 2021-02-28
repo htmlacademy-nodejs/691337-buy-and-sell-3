@@ -4,7 +4,7 @@
   "description": "Куплю. Продам",
   "main": "./src/service/service.js",
   "scripts": {
-    "test": "npm run eslint",
+    "test": "npm run eslint --fix-dry-run",
     "test::rest": "jest .test.js e2e.test.js",
     "eslint": "eslint --ext .js src/",
     "start": "cross-env NODE_ENV=production LOG_LEVEL=error node ./src/service/service.js --server > ./service/logs/error.log",
@@ -24,7 +24,7 @@
   "homepage": "https://github.com/honiara1973/691337-buy-and-sell-3#readme",
   "devDependencies": {
     "eslint": "6.8.0",
-    "eslint-config-htmlacademy": "0.5.2",
+    "eslint-config-htmlacademy": "0.6.0",
     "jest": "25.3.0",
     "nodemon": "2.0.2",
     "pino-pretty": "4.0.0",

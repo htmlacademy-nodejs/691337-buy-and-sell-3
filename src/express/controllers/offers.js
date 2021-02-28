@@ -11,6 +11,7 @@ const offerPicture = [];
 module.exports.getOffer = async (req, res) => {
   try {
     const offer = await getData(`${URL}/offers/${req.params.id}`);
+    const {avatar} = req.cookies;
     const categories = await getData(`${URL}/categories`);
     const categoriesTitle = categories.map((it) => it.title);
     offerPicture.push(offer.offerData.picture);
@@ -18,6 +19,7 @@ module.exports.getOffer = async (req, res) => {
       data: offer.offerData,
       categories: offer.currentCategories,
       categoriesTitle,
+      avatar,
       csrf: req.csrfToken(),
     });
   } catch (err) {
@@ -28,6 +30,7 @@ module.exports.getOffer = async (req, res) => {
 module.exports.getOffersByCategory = async (req, res) => {
   try {
     const currentPage = req.query.page;
+    const {avatar} = req.cookies;
     const categories = await getData(`${URL}/categories`);
     const data = await getData(`${URL}/offers/category/${req.params.id}/?page=${currentPage}`);
     return res.render(`offers/category`,
@@ -38,7 +41,8 @@ module.exports.getOffersByCategory = async (req, res) => {
           current: data.currentPage,
           category: data.categoryData,
           view: data.pagesToView,
-          categories
+          categories,
+          avatar
         });
 
   } catch (err) {
@@ -50,10 +54,12 @@ module.exports.getNewOfferForm = async (req, res) => {
   try {
     const categories = await getData(`${URL}/categories`);
     const categoriesTitle = categories.map((it) => it.title);
+    const {avatar} = req.cookies;
     return res.render(`offers/new-ticket`, {
       data: {},
       categoriesTitle,
       csrf: req.csrfToken(),
+      avatar
     });
   } catch (err) {
     return renderError(err.response.status, res);

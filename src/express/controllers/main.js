@@ -5,11 +5,14 @@ const {getData, renderError} = require(`../../utils`);
 const {URL, DefaultData} = require(`../../constants`);
 const logger = getLogger();
 
+let isLogged = false;
+
 module.exports.getOffers = async (req, res) => {
   try {
     const offers = await getData(`${URL}/offers`);
     const categories = await getData(`${URL}/categories`);
-    return res.render(`main`, {data: offers, categories});
+    const {avatar} = req.cookies;
+    return res.render(`main`, {data: offers, categories, isLogged, avatar});
   } catch (err) {
     return renderError(err.response.status, res);
   }
@@ -75,8 +78,10 @@ module.exports.authenticateUser = async (req, res) => {
 
   try {
     const response = await axios.post(`${URL}/user/login`, user);
+    isLogged = true;
     await res.cookie(`accessToken`, `${response.data.accessToken}`);
     await res.cookie(`refreshToken`, `${response.data.refreshToken}`);
+    await res.cookie(`avatar`, `${response.data.avatar}`);
     return res.redirect(`/`);
   } catch (err) {
     logger.error(`Error: ${err}`);
@@ -94,6 +99,7 @@ module.exports.logout = async (req, res) => {
   try {
     await axios.post(`${URL}/user/logout`, {refreshToken});
     await res.clearCookie();
+    isLogged = false;
     return res.redirect(`/login`);
   } catch (err) {
     return renderError(err.response.status, res);

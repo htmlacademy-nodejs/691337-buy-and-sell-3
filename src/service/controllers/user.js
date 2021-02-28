@@ -50,11 +50,13 @@ module.exports.createUser = async (req, res) => {
 };
 
 module.exports.makeTokens = async (req, res) => {
-  const id = res.locals.user.user_id;
+  const user = res.locals.user;
+  const id = user.user_id;
+  const avatar = user.avatar;
 
   const {accessToken, refreshToken} = makeTokens({id});
   await storage.addRefreshToken(refreshToken);
-  return res.json({accessToken, refreshToken});
+  return res.json({accessToken, refreshToken, avatar});
 };
 
 module.exports.refreshToken = async (req, res) => {
