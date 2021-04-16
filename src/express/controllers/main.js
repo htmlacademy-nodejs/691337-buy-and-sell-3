@@ -98,7 +98,9 @@ module.exports.logout = async (req, res) => {
 
   try {
     await axios.post(`${URL}/user/logout`, {refreshToken});
-    await res.clearCookie();
+    await res.clearCookie(`accessToken`);
+    await res.clearCookie(`refreshToken`);
+    await res.clearCookie(`avatar`);
     isLogged = false;
     return res.redirect(`/login`);
   } catch (err) {

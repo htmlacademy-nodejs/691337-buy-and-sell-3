@@ -4,7 +4,7 @@
   "description": "Куплю. Продам",
   "main": "./src/service/service.js",
   "scripts": {
-    "test": "npm run eslint --fix-dry-run",
+    "test": "npm run eslint",
     "test::rest": "jest .test.js e2e.test.js",
     "eslint": "eslint --ext .js src/",
     "start": "cross-env NODE_ENV=production LOG_LEVEL=error node ./src/service/service.js --server > ./service/logs/error.log",
