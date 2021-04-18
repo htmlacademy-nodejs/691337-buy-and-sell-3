@@ -6,7 +6,11 @@ block header
 block content
   main.page-content
     section.login
-      form.login__form.form(action='#' method='post' enctype='multipart/form-data')
+      if errorsList
+        p.error__title При входе произошли ошибки:
+        each item in errorsList
+          li.error__list(style={color: 'red', margin:'0 0 0 0px'})= item
+      form.login__form.form(action='/login' method='post' enctype='multipart/form-data')
         .login__title
           a.login__link(href='/register') Регистрация
           h2 Вход

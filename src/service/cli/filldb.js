@@ -5,7 +5,7 @@ const nanoid = require(`nanoid`);
 
 const {getLogger} = require(`../../logger`);
 const {getRandomInt, shuffle} = require(`../../utils`);
-const {sequelize, initDb} = require(`../../../service/db`);
+const {sequelize, initDb} = require(`../../data-service/db`);
 
 const FILE_PATH_SENTENCES = `./data/sentences.txt`;
 const FILE_PATH_TITLES = `./data/titles.txt`;

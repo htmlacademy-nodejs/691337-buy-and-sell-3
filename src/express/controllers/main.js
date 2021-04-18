@@ -5,11 +5,14 @@ const {getData, renderError} = require(`../../utils`);
 const {URL, DefaultData} = require(`../../constants`);
 const logger = getLogger();
 
+let isLogged = false;
+
 module.exports.getOffers = async (req, res) => {
   try {
     const offers = await getData(`${URL}/offers`);
     const categories = await getData(`${URL}/categories`);
-    return res.render(`main`, {data: offers, categories});
+    const {avatar} = req.cookies;
+    return res.render(`main`, {data: offers, categories, isLogged, avatar});
   } catch (err) {
     return renderError(err.response.status, res);
   }
@@ -34,17 +37,24 @@ module.exports.getRegisterForm = (req, res) => {
   }
 };
 
+module.exports.getLoginForm = (req, res) => {
+  try {
+    return res.render(`auth/login`, {
+      data: {}
+    });
+  } catch (err) {
+    return renderError(err.response.status, res);
+  }
+};
+
 module.exports.addNewUser = async (req, res) => {
-  const getPicture = () => {
-    return req.files.length > 0 ? req.files[0].originalname : DefaultData.picture;
-  };
 
   const user = {
     userName: req.body[`user-name`],
     email: req.body[`user-email`],
     pass: req.body[`user-password`],
     repeatPass: req.body[`user-password-again`],
-    avatar: getPicture()
+    avatar: req.file ? req.file.filename : DefaultData.picture
   };
 
   try {
@@ -52,10 +62,48 @@ module.exports.addNewUser = async (req, res) => {
     return res.redirect(`/login`);
   } catch (err) {
     logger.error(`Error: ${err}`);
-    const errorsList = err.response.data.notValid;
+    const errorsList = err.response.data;
     return res.render(`auth/sign-up`, {
       errorsList,
       data: user
     });
+  }
+};
+
+module.exports.authenticateUser = async (req, res) => {
+  const user = {
+    email: req.body[`user-email`],
+    pass: req.body[`user-password`],
+  };
+
+  try {
+    const response = await axios.post(`${URL}/user/login`, user);
+    isLogged = true;
+    await res.cookie(`accessToken`, `${response.data.accessToken}`);
+    await res.cookie(`refreshToken`, `${response.data.refreshToken}`);
+    await res.cookie(`avatar`, `${response.data.avatar}`);
+    return res.redirect(`/`);
+  } catch (err) {
+    logger.error(`Error: ${err}`);
+    const errorsList = err.response.data;
+    return res.render(`auth/login`, {
+      errorsList,
+      data: user
+    });
+  }
+};
+
+module.exports.logout = async (req, res) => {
+  const {refreshToken} = req.cookies;
+
+  try {
+    await axios.post(`${URL}/user/logout`, {refreshToken});
+    await res.clearCookie(`accessToken`);
+    await res.clearCookie(`refreshToken`);
+    await res.clearCookie(`avatar`);
+    isLogged = false;
+    return res.redirect(`/login`);
+  } catch (err) {
+    return renderError(err.response.status, res);
   }
 };

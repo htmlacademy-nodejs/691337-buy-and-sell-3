@@ -1,7 +1,10 @@
 extends common/layout.pug
 
 block header
-  include common/header.pug
+  if isLogged
+    include common/header-logged.pug
+  else
+    include common/header.pug
 
 block content
   main.page-content
@@ -25,8 +28,7 @@ block content
             li.tickets-list__item
               .ticket-card.ticket-card--color01
                 .ticket-card__img
-                  - const picture = item.picture.split('.')[0]
-                  img(src='/img/' + picture + '.jpg' srcset='/img/' + picture + '@2x.jpg 2x' alt='Изображение товара')
+                  img(src='/img/' + item.picture srcset='/img/' + item.picture alt='Изображение товара')
                 .ticket-card__info
                   span.ticket-card__label= item.type
                   .ticket-card__categories
@@ -49,8 +51,7 @@ block content
             li.tickets-list__item
               .ticket-card.ticket-card--color09
                 .ticket-card__img
-                  - const picture = item.picture.split('.')[0]
-                  img(src='/img/' + picture + '.jpg' srcset='/img/' + picture + '@2x.jpg 2x' alt='Изображение товара')
+                  img(src='/img/' + item.picture srcset='/img/' + item.picture alt='Изображение товара')
                 .ticket-card__info
                   span.ticket-card__label= item.type
                   .ticket-card__categories

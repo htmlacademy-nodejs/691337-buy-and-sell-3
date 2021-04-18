@@ -11,13 +11,16 @@ const offerPicture = [];
 module.exports.getOffer = async (req, res) => {
   try {
     const offer = await getData(`${URL}/offers/${req.params.id}`);
+    const {avatar} = req.cookies;
     const categories = await getData(`${URL}/categories`);
     const categoriesTitle = categories.map((it) => it.title);
     offerPicture.push(offer.offerData.picture);
     return res.render(`offers/ticket-edit`, {
       data: offer.offerData,
       categories: offer.currentCategories,
-      categoriesTitle
+      categoriesTitle,
+      avatar,
+      csrf: req.csrfToken(),
     });
   } catch (err) {
     return renderError(err.response.status, res);
@@ -27,6 +30,7 @@ module.exports.getOffer = async (req, res) => {
 module.exports.getOffersByCategory = async (req, res) => {
   try {
     const currentPage = req.query.page;
+    const {avatar} = req.cookies;
     const categories = await getData(`${URL}/categories`);
     const data = await getData(`${URL}/offers/category/${req.params.id}/?page=${currentPage}`);
     return res.render(`offers/category`,
@@ -37,7 +41,8 @@ module.exports.getOffersByCategory = async (req, res) => {
           current: data.currentPage,
           category: data.categoryData,
           view: data.pagesToView,
-          categories
+          categories,
+          avatar
         });
 
   } catch (err) {
@@ -49,9 +54,12 @@ module.exports.getNewOfferForm = async (req, res) => {
   try {
     const categories = await getData(`${URL}/categories`);
     const categoriesTitle = categories.map((it) => it.title);
+    const {avatar} = req.cookies;
     return res.render(`offers/new-ticket`, {
       data: {},
-      categoriesTitle
+      categoriesTitle,
+      csrf: req.csrfToken(),
+      avatar
     });
   } catch (err) {
     return renderError(err.response.status, res);
@@ -59,9 +67,7 @@ module.exports.getNewOfferForm = async (req, res) => {
 };
 
 module.exports.addOffer = async (req, res) => {
-  const getPicture = () => {
-    return req.files.length > 0 ? req.files[0].originalname : DefaultData.picture;
-  };
+
   const offerDate = new Date();
   const normalizeCategory = (data) => {
     if (data === undefined) {
@@ -72,7 +78,7 @@ module.exports.addOffer = async (req, res) => {
 
   const offer = {
     title: req.body[`ticket-name`],
-    picture: getPicture(),
+    picture: req.file ? req.file.filename : DefaultData.picture,
     createdDate: offerDate.toISOString(),
     description: req.body.comment,
     category: normalizeCategory(req.body.category),
@@ -96,9 +102,7 @@ module.exports.addOffer = async (req, res) => {
 };
 
 module.exports.updateOffer = async (req, res) => {
-  const getPicture = () => {
-    return req.files.length > 0 ? req.files[0].originalname : offerPicture[0];
-  };
+
   const normalizeCategory = (data) => {
     if (data === undefined) {
       return [];
@@ -108,7 +112,7 @@ module.exports.updateOffer = async (req, res) => {
 
   const offer = {
     title: req.body[`ticket-name`],
-    picture: getPicture(),
+    picture: req.file ? req.file.filename : DefaultData.picture,
     description: req.body.comment,
     category: normalizeCategory(req.body.category),
     type: req.body.action,

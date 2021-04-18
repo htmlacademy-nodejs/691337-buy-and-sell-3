@@ -21,6 +21,16 @@ module.exports.HttpCode = {
   BAD_REQUEST: 400,
 };
 
+module.exports.OfferMessage = {
+  REQUIRED_FIELD: `Поле обязательно для заполнения`,
+  MIN_TITLE_LENGTH: `Название должно быть не меньше 10 символов`,
+  MAX_TITLE_LENGTH: `Название должно быть не больше 100 символов`,
+  MIN_DESCR_LENGTH: `Описание должно быть не меньше 50 символов`,
+  MAX_DESCR_LENGTH: `Описание должно быть не больше 1000 символов`,
+  MIN_PRICE: `Цена должна быть не меньше 100`,
+  CATEGORY_REQUIRED: `Необходимо выбрать минимум 1 категорию`
+};
+
 module.exports.RegisterMessage = {
   USER_ALREADY_REGISTER: `Пользователь с таким email уже зарегистрирован`,
   REQUIRED_FIELD: `Поле обязательно для заполнения`,
@@ -30,3 +40,9 @@ module.exports.RegisterMessage = {
   PASSWORDS_NOT_EQUAL: `Пароли не совпадают`,
   AVATAR_EMPTY_VALUE: `Отсутствует аватар`
 };
+
+module.exports.LoginMessage = {
+  USER_NOT_EXISTS: `Пользователь с таким email не зарегистрирован`,
+  WRONG_PASSWORD: `Неверный логин или пароль`
+};
+

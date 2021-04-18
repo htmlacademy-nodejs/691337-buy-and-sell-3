@@ -9,5 +9,8 @@ const userSchema = require(`../validation/schemes/user-schema`);
 userRouter.use(express.json());
 
 userRouter.post(`/`, [checkValidity(userSchema), controller.checkUserExists], controller.createUser);
+userRouter.post(`/login`, controller.authenticateUser, controller.makeTokens);
+userRouter.post(`/refresh`, controller.refreshToken);
+userRouter.post(`/logout`, controller.logout);
 
 module.exports = userRouter;

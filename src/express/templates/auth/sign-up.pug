@@ -22,11 +22,11 @@ block content
               span.sign-up__text-upload Загрузить аватар…
               span.sign-up__text-another Загрузить другой аватар…
         .form__field.sign-up__field
-          input#user-name.js-field(type='text' name='user-name' required)
+          input#user-name.js-field(type='text' name='user-name' value= data.userName required)
           label(for='user-name') Имя и фамилия
           span Обязательное поле
         .form__field.sign-up__field
-          input#user-email.js-field(type='email' name='user-email' required)
+          input#user-email.js-field(type='email' name='user-email' value= data.email required)
           label(for='user-email') Эл. почта
           span Обязательное поле
         .form__field.sign-up__field
